@@ -1,0 +1,75 @@
+plugins {
+    id 'java'
+}
+
+group 'com.radynamics.xrplservermgr'
+version '0.2.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
+
+    //implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+    implementation group: 'com.github.mwiede', name: 'jsch', version: '0.2.17'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.vdurmont:semver4j:3.1.0'
+    implementation group: 'net.coderazzi', name: 'tablefilter-swing', version: '5.5.4'
+
+    implementation 'com.formdev:flatlaf:3.4'
+    implementation 'com.formdev:flatlaf-extras:3.4'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task createProperties() {
+    doLast {
+        File propertiesFile = file('src/main/resources/version.properties')
+        Properties p = new Properties()
+        if (propertiesFile.exists()) {
+            propertiesFile.withWriter { w ->
+                p['version'] = project.version.toString()
+                p.store w, null
+            }
+        } else {
+            p['version'] = project.version.toString()
+            Writer w = new FileWriter(propertiesFile, false)
+            p.store w, null
+        }
+
+        // copy needed, otherwise the bean VersionController can't load the file at startup when running complete-app tests.
+        copy {
+            from "src/main/resources/version.properties"
+            into "bin/main/"
+        }
+    }
+}
+
+classes {
+    dependsOn createProperties
+}
+
+task createFatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'com.radynamics.xrplservermgr.Main'
+    }
+    archiveFileName = 'xrplservermgr.jar'
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+            {
+                exclude "META-INF/*.SF"
+                exclude "META-INF/*.DSA"
+                exclude "META-INF/*.RSA"
+            }
+    //exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    with jar
+}
