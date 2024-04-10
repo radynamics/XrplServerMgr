@@ -7,3 +7,4 @@
 /gradlew.bat
 /settings.gradle
 /bin
+/src/main/resources/version.properties
