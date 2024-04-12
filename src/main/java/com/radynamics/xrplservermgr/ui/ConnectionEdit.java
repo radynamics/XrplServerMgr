@@ -1,7 +1,6 @@
 package com.radynamics.xrplservermgr.ui;
 
 import com.radynamics.xrplservermgr.sshapi.ConnectionInfo;
-import com.radynamics.xrplservermgr.sshapi.SshSession;
 import com.radynamics.xrplservermgr.utils.RequestFocusListener;
 
 import javax.swing.*;
@@ -44,21 +43,7 @@ public class ConnectionEdit {
             return null;
         }
 
-        var conn = createConnection();
-        if (!canConnect(conn)) {
-            JOptionPane.showMessageDialog(parent, "Could not connect to %s".formatted(conn.host()), "Error", JOptionPane.ERROR_MESSAGE);
-            return show(parent, conn);
-        }
-        return conn;
-    }
-
-    private boolean canConnect(ConnectionInfo conn) {
-        try (var s = new SshSession(() -> null, conn)) {
-            s.open();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return createConnection();
     }
 
     private ConnectionInfo createConnection() {

@@ -17,6 +17,15 @@ public class ConnectionInfo {
         this.password = password;
     }
 
+    public boolean canConnect() {
+        try (var s = new SshSession(() -> null, this)) {
+            s.open();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String name() {
         return name;
     }

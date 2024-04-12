@@ -24,6 +24,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     private final static Logger log = LogManager.getLogger(ServerPanel.class);
     private final ArrayList<ServerPanelListener> listener = new ArrayList<>();
     private final BackgroundImageProvider backgroundImageProvider = new LittleLedgers(); //new XahauMonsters();;
+    private final SectionContentPanel serverConnections;
 
     public ServerPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -91,36 +92,38 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 newsfeed.contentPanel().add(Box.createVerticalGlue());
             }
             {
-                var pnl = new SectionContentPanel("Server Connections");
-                p.add(pnl);
-                l.putConstraint(SpringLayout.WEST, pnl, 0, SpringLayout.WEST, p);
-                l.putConstraint(SpringLayout.NORTH, pnl, 0, SpringLayout.NORTH, p);
-                l.putConstraint(SpringLayout.EAST, pnl, -20, SpringLayout.WEST, newsfeed);
-                l.putConstraint(SpringLayout.SOUTH, pnl, 0, SpringLayout.SOUTH, p);
+                serverConnections = new SectionContentPanel("Server Connections");
+                p.add(serverConnections);
+                l.putConstraint(SpringLayout.WEST, serverConnections, 0, SpringLayout.WEST, p);
+                l.putConstraint(SpringLayout.NORTH, serverConnections, 0, SpringLayout.NORTH, p);
+                l.putConstraint(SpringLayout.EAST, serverConnections, -20, SpringLayout.WEST, newsfeed);
+                l.putConstraint(SpringLayout.SOUTH, serverConnections, 0, SpringLayout.SOUTH, p);
 
                 final var gap = 20;
-                pnl.contentPanel().setBorder(new EmptyBorder(0, gap * -1, 0, 0));
-                pnl.contentPanel().setLayout(new FlowLayout(FlowLayout.LEFT, gap, gap));
+                serverConnections.contentPanel().setBorder(new EmptyBorder(0, gap * -1, 0, 0));
+                serverConnections.contentPanel().setLayout(new FlowLayout(FlowLayout.LEFT, gap, gap));
 
                 {
-                    var cmd = createConnectionButton("connect VM (Ubuntu 22)", e -> onConnectClick("VM Ubuntu 22", "192.168.1.108", "vboxuser", "changeme"));
-                    cmd.addAncestorListener(new RequestFocusListener());
-                    pnl.contentPanel().add(cmd);
-                }
-                {
-                    var cmd = createConnectionButton("connect VM (Ubuntu Server)", e -> onConnectClick("VM Ubuntu Server", "192.168.1.116", "rs", "changeme"));
-                    pnl.contentPanel().add(cmd);
-                }
-                pnl.contentPanel().add(createConnectionButton("connect VM (RedHat)", e -> onConnectClick("VM RedHat", "192.168.1.114", "vboxuser", "changeme")));
-                pnl.contentPanel().add(createConnectionButton("connect ubuntu01", e -> onConnectClick("PROD ubuntu01", "192.168.0.234", "rsteimen", "")));
-                {
-                    var cmd = createConnectionButton("", e -> onConnectClick("", "", "", ""));
-                    pnl.contentPanel().add(cmd);
+                    var cmd = createConnectionButton("", e -> editConnection());
+                    serverConnections.contentPanel().add(cmd);
                     cmd.setBackground(null);
 
                     var icon = new FlatSVGIcon("img/plus.svg", 64, 64);
                     icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> Color.lightGray));
                     cmd.setIcon(icon);
+                }
+
+                var connections = new ArrayList<ConnectionInfo>();
+                connections.add(new ConnectionInfo("VM Ubuntu 22", "192.168.1.108", 22, "vboxuser", "changeme"));
+                connections.add(new ConnectionInfo("VM Ubuntu Server", "192.168.1.116", 22, "rs", "changeme"));
+                connections.add(new ConnectionInfo("VM RedHat", "192.168.1.114", 22, "vboxuser", "changeme"));
+                connections.add(new ConnectionInfo("ubuntu01t", "192.168.1.234", 22, "rsteimen", ""));
+
+                for (var i = 0; i < connections.size(); i++) {
+                    var cmd = addConnectionButton(connections.get(i));
+                    if (i == 0) {
+                        cmd.addAncestorListener(new RequestFocusListener());
+                    }
                 }
             }
         }
@@ -166,6 +169,13 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
         return pnl;
     }
 
+    private JButton addConnectionButton(ConnectionInfo conn) {
+        var index = serverConnections.contentPanel().getComponentCount() - 1;
+        var cmd = createConnectionButton(conn.name(), e -> onConnectClick(conn));
+        serverConnections.contentPanel().add(cmd, index);
+        return cmd;
+    }
+
     private static JButton createConnectionButton(String text, ActionListener onClick) {
         var cmd = new JButton(text);
         cmd.setPreferredSize(new Dimension(250, 100));
@@ -173,18 +183,39 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
         return cmd;
     }
 
-    private void onConnectClick(String name, String host, String user, String password) {
-        onConnectClick(new ConnectionInfo(name, host, 22, user, password));
+    private void editConnection() {
+        editConnection(new ConnectionInfo("", "", 22, "", ""));
     }
 
-    private void onConnectClick(ConnectionInfo ci) {
+    private void editConnection(ConnectionInfo ci) {
         var ce = new ConnectionEdit();
-        var conn = ce.show(null, ci);
+        var conn = ce.show(this, ci);
         if (conn == null) {
             return;
         }
 
+        if (!canConnect(conn)) {
+            editConnection(conn);
+            return;
+        }
+
+        addConnectionButton(conn);
+    }
+
+    private void onConnectClick(ConnectionInfo conn) {
+        if (!canConnect(conn)) {
+            return;
+        }
         raiseConnect(conn);
+    }
+
+    private boolean canConnect(ConnectionInfo conn) {
+        if (conn.canConnect()) {
+            return true;
+        }
+
+        JOptionPane.showMessageDialog(this, "Could not connect to %s".formatted(conn.host()), "Error", JOptionPane.ERROR_MESSAGE);
+        return false;
     }
 
     @Override
