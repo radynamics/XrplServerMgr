@@ -191,10 +191,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
             return null;
         }
 
-        if (!canConnect(conn)) {
-            editConnection(conn);
-            return null;
-        }
+        canConnect(conn);
         return conn;
     }
 
