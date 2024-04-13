@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -104,7 +103,8 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 serverConnections.contentPanel().setLayout(new FlowLayout(FlowLayout.LEFT, gap, gap));
 
                 {
-                    var cmd = createConnectionButton("", e -> editConnection());
+                    var cmd = new ConnectionButton("");
+                    cmd.addActionListener(e -> addConnection());
                     serverConnections.contentPanel().add(cmd);
                     cmd.setBackground(null);
 
@@ -117,7 +117,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 connections.add(new ConnectionInfo("VM Ubuntu 22", "192.168.1.108", 22, "vboxuser", "changeme"));
                 connections.add(new ConnectionInfo("VM Ubuntu Server", "192.168.1.116", 22, "rs", "changeme"));
                 connections.add(new ConnectionInfo("VM RedHat", "192.168.1.114", 22, "vboxuser", "changeme"));
-                connections.add(new ConnectionInfo("ubuntu01t", "192.168.1.234", 22, "rsteimen", ""));
+                connections.add(new ConnectionInfo("ubuntu01", "192.168.1.234", 22, "rsteimen", ""));
 
                 for (var i = 0; i < connections.size(); i++) {
                     var cmd = addConnectionButton(connections.get(i));
@@ -170,36 +170,32 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     }
 
     private JButton addConnectionButton(ConnectionInfo conn) {
+        var cmd = new ConnectionButton(conn);
         var index = serverConnections.contentPanel().getComponentCount() - 1;
-        var cmd = createConnectionButton(conn.name(), e -> onConnectClick(conn));
         serverConnections.contentPanel().add(cmd, index);
         return cmd;
     }
 
-    private static JButton createConnectionButton(String text, ActionListener onClick) {
-        var cmd = new JButton(text);
-        cmd.setPreferredSize(new Dimension(250, 100));
-        cmd.addActionListener(onClick);
-        return cmd;
+    private void addConnection() {
+        var conn = editConnection(new ConnectionInfo("", "", 22, "", ""));
+        if (conn == null) {
+            return;
+        }
+        addConnectionButton(conn);
     }
 
-    private void editConnection() {
-        editConnection(new ConnectionInfo("", "", 22, "", ""));
-    }
-
-    private void editConnection(ConnectionInfo ci) {
+    private ConnectionInfo editConnection(ConnectionInfo ci) {
         var ce = new ConnectionEdit();
         var conn = ce.show(this, ci);
         if (conn == null) {
-            return;
+            return null;
         }
 
         if (!canConnect(conn)) {
             editConnection(conn);
-            return;
+            return null;
         }
-
-        addConnectionButton(conn);
+        return conn;
     }
 
     private void onConnectClick(ConnectionInfo conn) {
@@ -260,6 +256,51 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
 
         public JPanel contentPanel() {
             return contentPanel;
+        }
+    }
+
+    private class ConnectionButton extends JButton {
+        private ConnectionInfo conn;
+
+        public ConnectionButton(String text) {
+            setText(text);
+            setPreferredSize(new Dimension(250, 100));
+        }
+
+        public ConnectionButton(ConnectionInfo conn) {
+            this(conn.name());
+            this.conn = conn;
+
+            addActionListener(e -> onConnectClick(this.conn));
+
+            setMargin(new Insets(0, 0, 0, 0));
+            setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+            var remove = createActionButton("img/trash.svg");
+            add((remove));
+            remove.addActionListener(e -> serverConnections.contentPanel.remove(this));
+
+            var edit = createActionButton("img/pen.svg");
+            add(edit);
+            edit.addActionListener(e -> {
+                var c = editConnection(this.conn);
+                if (c == null) {
+                    return;
+                }
+                setText(c.name());
+                this.conn = c;
+            });
+        }
+
+        private JButton createActionButton(String name) {
+            var cmd = new JButton();
+            var icon = new FlatSVGIcon(name, 16, 16);
+            icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> Color.lightGray));
+            cmd.setIcon(icon);
+            cmd.setPreferredSize(new Dimension(20, 20));
+            cmd.setFocusable(false);
+            cmd.setBackground(null);
+            return cmd;
         }
     }
 }
