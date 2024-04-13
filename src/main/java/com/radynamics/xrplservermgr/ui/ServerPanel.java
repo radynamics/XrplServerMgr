@@ -103,7 +103,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 serverConnections.contentPanel().setLayout(new FlowLayout(FlowLayout.LEFT, gap, gap));
 
                 {
-                    var cmd = new ConnectionButton("");
+                    var cmd = new ConnectionButton(this, "");
                     cmd.addActionListener(e -> addConnection());
                     serverConnections.contentPanel().add(cmd);
                     cmd.setBackground(null);
@@ -170,7 +170,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     }
 
     private JButton addConnectionButton(ConnectionInfo conn) {
-        var cmd = new ConnectionButton(conn);
+        var cmd = new ConnectionButton(this, conn);
         var index = serverConnections.contentPanel().getComponentCount() - 1;
         serverConnections.contentPanel().add(cmd, index);
         return cmd;
@@ -260,15 +260,17 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     }
 
     private class ConnectionButton extends JButton {
+        private final Component parent;
         private ConnectionInfo conn;
 
-        public ConnectionButton(String text) {
+        public ConnectionButton(Component parent, String text) {
+            this.parent = parent;
             setText(text);
             setPreferredSize(new Dimension(250, 100));
         }
 
-        public ConnectionButton(ConnectionInfo conn) {
-            this(conn.name());
+        public ConnectionButton(Component parent, ConnectionInfo conn) {
+            this(parent, conn.name());
             this.conn = conn;
 
             addActionListener(e -> onConnectClick(this.conn));
@@ -278,7 +280,13 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
 
             var remove = createActionButton("img/trash.svg");
             add((remove));
-            remove.addActionListener(e -> serverConnections.contentPanel.remove(this));
+            remove.addActionListener(e -> {
+                var res = JOptionPane.showConfirmDialog(parent, "Do you really want to delete connection %s".formatted(this.conn.name()), MainForm.appTitle, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (res != JOptionPane.YES_OPTION) {
+                    return;
+                }
+                serverConnections.contentPanel.remove(this);
+            });
 
             var edit = createActionButton("img/pen.svg");
             add(edit);

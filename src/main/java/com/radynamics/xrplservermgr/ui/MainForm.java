@@ -27,9 +27,11 @@ public class MainForm extends JFrame {
     private final JTabbedPane tabbedPane;
     private final ServerPanel serverPanel = new ServerPanel();
 
+    public final static String appTitle = "XRPL Server Manager";
+
     public MainForm() {
         var vc = new VersionController();
-        setTitle(String.format("XRPL Server Manager [%s]", vc.getVersion()));
+        setTitle(String.format("%s [%s]", appTitle, vc.getVersion()));
 
         var mainContentBorder = new EmptyBorder(0, 10, 10, 10);
 
