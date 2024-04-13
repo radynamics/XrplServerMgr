@@ -278,7 +278,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
             var remove = createActionButton("img/trash.svg");
             add((remove));
             remove.addActionListener(e -> {
-                var res = JOptionPane.showConfirmDialog(parent, "Do you really want to delete connection %s".formatted(this.conn.name()), MainForm.appTitle, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                var res = JOptionPane.showConfirmDialog(parent, "Do you really want to delete connection %s?".formatted(this.conn.name()), MainForm.appTitle, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (res != JOptionPane.YES_OPTION) {
                     return;
                 }
