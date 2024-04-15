@@ -114,10 +114,10 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 }
 
                 var connections = new ArrayList<ConnectionInfo>();
-                connections.add(new ConnectionInfo("VM Ubuntu 22", "192.168.1.108", 22, "vboxuser", "changeme"));
-                connections.add(new ConnectionInfo("VM Ubuntu Server", "192.168.1.116", 22, "rs", "changeme"));
-                connections.add(new ConnectionInfo("VM RedHat", "192.168.1.114", 22, "vboxuser", "changeme"));
-                connections.add(new ConnectionInfo("ubuntu01", "192.168.1.234", 22, "rsteimen", ""));
+                connections.add(new ConnectionInfo("VM Ubuntu 22", "192.168.1.108", 22, "vboxuser", "changeme".toCharArray()));
+                connections.add(new ConnectionInfo("VM Ubuntu Server", "192.168.1.116", 22, "rs", "changeme".toCharArray()));
+                connections.add(new ConnectionInfo("VM RedHat", "192.168.1.114", 22, "vboxuser", "changeme".toCharArray()));
+                connections.add(new ConnectionInfo("ubuntu01", "192.168.1.234", 22, "rsteimen", new char[0]));
 
                 for (var i = 0; i < connections.size(); i++) {
                     var cmd = addConnectionButton(connections.get(i));
@@ -177,7 +177,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     }
 
     private void addConnection() {
-        var conn = editConnection(new ConnectionInfo("", "", 22, "", ""));
+        var conn = editConnection(new ConnectionInfo("", "", 22, "", new char[0]));
         if (conn == null) {
             return;
         }

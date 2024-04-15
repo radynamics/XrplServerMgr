@@ -13,10 +13,11 @@ public class ConnectionEdit {
     private final JTextField txtPort = new JTextField();
     private final JTextField txtUsername = new JTextField();
     private final JPasswordField txtPassword = new JPasswordField();
+    private final JLabel lblPasswordKnown = new JLabel("Password known. Enter a new one or leave empty to keep current.");
 
     public ConnectionEdit() {
         pnl.setLayout(new GridBagLayout());
-        pnl.setPreferredSize(new Dimension(350, 130));
+        pnl.setPreferredSize(new Dimension(450, 150));
         var y = 0;
         pnl.add(new JLabel("Connection Name:"), createGridConstraints(0.3, 1, 0, y));
         pnl.add(txtName, createGridConstraints(0.7, 1, 1, y++));
@@ -27,7 +28,13 @@ public class ConnectionEdit {
         pnl.add(new JLabel("Username:"), createGridConstraints(0.3, 1, 0, y));
         pnl.add(txtUsername, createGridConstraints(0.7, 1, 1, y++));
         pnl.add(new JLabel("Password:"), createGridConstraints(0.3, 1, 0, y));
-        pnl.add(txtPassword, createGridConstraints(0.7, 1, 1, y++));
+        {
+            var pwrPanel = new JPanel();
+            pwrPanel.setLayout(new BorderLayout());
+            pwrPanel.add(txtPassword, BorderLayout.NORTH);
+            pwrPanel.add(lblPasswordKnown, BorderLayout.SOUTH);
+            pnl.add(pwrPanel, createGridConstraints(0.7, 1, 1, y++));
+        }
     }
 
     public ConnectionInfo show(Component parent, ConnectionInfo c) {
@@ -36,21 +43,16 @@ public class ConnectionEdit {
         txtHost.setText(c.host());
         txtPort.setText(c.port().toString());
         txtUsername.setText(c.username());
-        txtPassword.setText(c.password());
+        lblPasswordKnown.setVisible(c.password().length > 0);
 
         int result = JOptionPane.showConfirmDialog(parent, pnl, "Connection", JOptionPane.OK_CANCEL_OPTION);
         if (result != JOptionPane.OK_OPTION) {
             return null;
         }
 
-        return createConnection();
-    }
-
-    private ConnectionInfo createConnection() {
         var port = toIntegerOrNull(txtPort.getText());
-
-        return new ConnectionInfo(txtName.getText(), txtHost.getText(), port == null ? ConnectionInfo.defaultPort : port,
-                txtUsername.getText(), txtPassword.getText());
+        var password = txtPassword.getPassword().length > 0 ? txtPassword.getPassword() : c.password();
+        return new ConnectionInfo(txtName.getText(), txtHost.getText(), port == null ? ConnectionInfo.defaultPort : port, txtUsername.getText(), password);
     }
 
     private static Integer toIntegerOrNull(String value) {

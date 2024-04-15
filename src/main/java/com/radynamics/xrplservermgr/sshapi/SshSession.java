@@ -21,7 +21,7 @@ public class SshSession implements AutoCloseable {
     private final String host;
     private final int port;
     private final String user;
-    private final String password;
+    private final char[] password;
     private com.jcraft.jsch.Session session;
     private final Timer connectionMonitorTimer = new Timer("ConnectionMonitor");
     private boolean previouslyConnected;
@@ -34,7 +34,7 @@ public class SshSession implements AutoCloseable {
         this(getSudoPassword, conn.host(), conn.port(), conn.username(), conn.password());
     }
 
-    public SshSession(Supplier<String> getSudoPassword, String host, int port, String user, String password) {
+    public SshSession(Supplier<String> getSudoPassword, String host, int port, String user, char[] password) {
         this.getSudoPassword = getSudoPassword;
         this.host = host;
         this.port = port;
@@ -49,7 +49,7 @@ public class SshSession implements AutoCloseable {
         config.put("StrictHostKeyChecking", "no");
         var jsch = new JSch();
         session = jsch.getSession(user, host, port);
-        session.setPassword(password);
+        session.setPassword(new String(password));
         session.setConfig(config);
         session.setTimeout(2000);
         session.connect();

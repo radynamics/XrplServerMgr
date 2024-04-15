@@ -5,11 +5,11 @@ public class ConnectionInfo {
     private final String host;
     private final int port;
     private final String username;
-    private final String password;
+    private final char[] password;
 
     public final static int defaultPort = 22;
 
-    public ConnectionInfo(String name, String host, int port, String username, String password) {
+    public ConnectionInfo(String name, String host, int port, String username, char[] password) {
         this.name = name;
         this.host = host;
         this.port = port;
@@ -42,7 +42,7 @@ public class ConnectionInfo {
         return username;
     }
 
-    public String password() {
+    public char[] password() {
         return password;
     }
 
