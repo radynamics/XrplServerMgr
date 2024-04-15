@@ -22,7 +22,7 @@ public class PasswordInput {
         return JOptionPane.showConfirmDialog(parentComponent, pnl, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
     }
 
-    public String password() {
-        return new String(txtPassword.getPassword());
+    public char[] password() {
+        return txtPassword.getPassword();
     }
 }

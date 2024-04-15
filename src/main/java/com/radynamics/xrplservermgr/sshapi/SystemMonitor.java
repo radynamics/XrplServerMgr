@@ -172,7 +172,7 @@ public class SystemMonitor {
         return platform;
     }
 
-    public boolean canSudo(String sudoPassword) {
+    public boolean canSudo(char[] sudoPassword) {
         try {
             var response = session.execute("sudo -S -v", sudoPassword, Duration.ofSeconds(2));
             return response.success() && StringUtils.isEmpty(response.asString());

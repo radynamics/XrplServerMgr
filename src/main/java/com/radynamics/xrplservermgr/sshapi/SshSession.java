@@ -17,7 +17,7 @@ import java.util.TimerTask;
 import java.util.function.Supplier;
 
 public class SshSession implements AutoCloseable {
-    private final Supplier<String> getSudoPassword;
+    private final Supplier<char[]> getSudoPassword;
     private final String host;
     private final int port;
     private final String user;
@@ -30,11 +30,11 @@ public class SshSession implements AutoCloseable {
 
     private final Duration infinite = Duration.ofHours(1);
 
-    public SshSession(Supplier<String> getSudoPassword, ConnectionInfo conn) {
+    public SshSession(Supplier<char[]> getSudoPassword, ConnectionInfo conn) {
         this(getSudoPassword, conn.host(), conn.port(), conn.username(), conn.password());
     }
 
-    public SshSession(Supplier<String> getSudoPassword, String host, int port, String user, char[] password) {
+    public SshSession(Supplier<char[]> getSudoPassword, String host, int port, String user, char[] password) {
         this.getSudoPassword = getSudoPassword;
         this.host = host;
         this.port = port;
@@ -97,7 +97,7 @@ public class SshSession implements AutoCloseable {
         return execute("sudo -S -p '' " + command, sudoPassword, infinite);
     }
 
-    Response execute(String command, String sudoPassword, Duration timeout) throws SshApiException {
+    Response execute(String command, char[] sudoPassword, Duration timeout) throws SshApiException {
         ChannelExec channel = null;
         try {
             raiseOnEvent(ActionLogEvent.info(command));
@@ -116,7 +116,7 @@ public class SshSession implements AutoCloseable {
             channel.connect();
 
             if (sudoPassword != null) {
-                out.write((sudoPassword + "\n").getBytes());
+                out.write((new String(sudoPassword) + "\n").getBytes());
                 out.flush();
             }
 

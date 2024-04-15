@@ -2,7 +2,6 @@ package com.radynamics.xrplservermgr.ui;
 
 import com.jcraft.jsch.JSchException;
 import com.radynamics.xrplservermgr.sshapi.*;
-import com.radynamics.xrplservermgr.ui.contentview.AmendmentsView;
 import com.radynamics.xrplservermgr.ui.contentview.MenuItem;
 import com.radynamics.xrplservermgr.ui.contentview.*;
 import com.radynamics.xrplservermgr.ui.logview.RippledProvider;
@@ -10,7 +9,6 @@ import com.radynamics.xrplservermgr.utils.AppendListener;
 import com.radynamics.xrplservermgr.utils.MapAppender;
 import com.radynamics.xrplservermgr.xrpl.XrplBinary;
 import com.radynamics.xrplservermgr.xrpl.XrplBinaryFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +33,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
     private SshSession sessionWithoutActionListener;
     private XrplBinary xrplBinaryWithoutActionListener;
     private SystemMonitor systemMonitorWithoutActionListener;
-    private String sudoPassword;
+    private char[] sudoPassword;
 
     public ServerView(JFrame parent, ConnectionInfo conn) {
         this.parent = parent;
@@ -102,7 +100,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
         return cmd;
     }
 
-    private String sudoPassword() {
+    private char[] sudoPassword() {
         if (sudoPassword == null) {
             var input = new PasswordInput();
             var ret = input.showSudo(this);
@@ -110,7 +108,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
                 return null;
             }
 
-            if (StringUtils.isEmpty(input.password()) || !systemMonitor.canSudo(input.password())) {
+            if (input.password().length == 0 || !systemMonitor.canSudo(input.password())) {
                 return sudoPassword();
             }
 
