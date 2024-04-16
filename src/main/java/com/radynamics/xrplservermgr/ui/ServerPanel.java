@@ -100,7 +100,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
 
                 final var gap = 20;
                 serverConnections.contentPanel().setBorder(new EmptyBorder(0, gap * -1, 0, 0));
-                serverConnections.contentPanel().setLayout(new FlowLayout(FlowLayout.LEFT, gap, gap));
+                serverConnections.contentPanel().setLayout(new WrapLayout(FlowLayout.LEFT, gap, gap));
 
                 {
                     var cmd = new ConnectionButton(this, "");
@@ -157,7 +157,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
             lbl.setText(news.text());
             lbl.setToolTipText(news.text());
             lbl.setOpaque(false);
-            lbl.setMaximumSize(new Dimension(containerWidth, 80));
+            lbl.setMaximumSize(new Dimension(containerWidth - 10, 80));
             lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
         }
 
@@ -246,8 +246,14 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
             add(lbl);
             lbl.putClientProperty("FlatLaf.styleClass", "h3");
 
-            add(contentPanel);
-            contentPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            var sp = new JScrollPane(contentPanel);
+            add(sp);
+            sp.setBorder(BorderFactory.createEmptyBorder());
+            sp.getVerticalScrollBar().setUnitIncrement(16);
+            sp.setAlignmentX(Component.LEFT_ALIGNMENT);
+            sp.setOpaque(false);
+            sp.getViewport().setOpaque(false);
+
             contentPanel.setOpaque(false);
         }
 
