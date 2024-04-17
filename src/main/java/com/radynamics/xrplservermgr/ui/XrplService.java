@@ -34,7 +34,7 @@ public class XrplService {
     }
 
     private Boolean askRestart() {
-        var ret = JOptionPane.showConfirmDialog(parent, "rippled needs to be restarted. This will cause a service downtime. Do you want to restart rippled now?", "Service restart required", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        var ret = JOptionPane.showConfirmDialog(parent, "%s needs to be restarted. This will cause a service downtime. Do you want to restart %s now?".formatted(xrplBinary.processName(), xrplBinary.processName()), "Service restart required", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         return ret == JOptionPane.YES_OPTION;
     }
 }
