@@ -1,7 +1,6 @@
 package com.radynamics.xrplservermgr.xrpl;
 
 import com.radynamics.xrplservermgr.sshapi.ActionLogListener;
-import com.radynamics.xrplservermgr.sshapi.Amendment;
 import com.radynamics.xrplservermgr.sshapi.ProgressListener;
 import com.radynamics.xrplservermgr.sshapi.SshApiException;
 import com.radynamics.xrplservermgr.xrpl.parser.*;

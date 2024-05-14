@@ -1,4 +1,4 @@
-package com.radynamics.xrplservermgr.sshapi;
+package com.radynamics.xrplservermgr.xrpl;
 
 import com.vdurmont.semver4j.Semver;
 

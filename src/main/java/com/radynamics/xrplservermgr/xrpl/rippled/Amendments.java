@@ -1,6 +1,6 @@
 package com.radynamics.xrplservermgr.xrpl.rippled;
 
-import com.radynamics.xrplservermgr.sshapi.Amendment;
+import com.radynamics.xrplservermgr.xrpl.Amendment;
 import com.vdurmont.semver4j.Semver;
 
 import java.util.ArrayList;

@@ -2,7 +2,7 @@ package com.radynamics.xrplservermgr.xrpl.parser;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.radynamics.xrplservermgr.sshapi.Amendment;
+import com.radynamics.xrplservermgr.xrpl.Amendment;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import java.util.*;
