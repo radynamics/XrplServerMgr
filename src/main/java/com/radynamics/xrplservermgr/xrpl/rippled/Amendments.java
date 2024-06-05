@@ -9,6 +9,11 @@ import java.util.List;
 public class Amendments {
     public static List<Amendment> all() {
         var list = new ArrayList<Amendment>();
+        list.add(Amendment.of("96FD2F293A519AE1DB6F8BED23E4AD9119342DA7CB6BAFD00953D16C54205D8B", "PriceOracle", new Semver("2.2.0")));
+        list.add(Amendment.of("755C971C29971C9F20C6F080F2ED96F87884E40AD19554A5EBECDCEC8A1F77FE", "fixEmptyDID", new Semver("2.2.0")));
+        list.add(Amendment.of("2BF037D90E1B676B17592A8AF55E88DB465398B4B597AE46EECEE1399AB05699", "fixXChainRewardRounding", new Semver("2.2.0")));
+        list.add(Amendment.of("7BB62DC13EC72B775091E9C71BF8CF97E122647693B50C5E87A80DFD6FCFAC50", "fixPreviousTxnID", new Semver("2.2.0")));
+        list.add(Amendment.of("35291ADD2D79EB6991343BDA0912269C817D0F094B02226C1C14AD2858962ED4", "fixAMMv1_1", new Semver("2.2.0")));
         list.add(Amendment.of("12523DF04B553A0B1AD74F42DDB741DE8DC06A03FC089A0EF197E2A87F1D8107", "fixAMMOverflowOffer", new Semver("2.1.1")));
         list.add(Amendment.of("C393B3AEEBF575E475F0C60D5E4241B2070CC4D0EB6C4846B1A07508FAEFC485", "fixInnerObjTemplate", new Semver("2.1.0")));
         list.add(Amendment.of("03BDC0099C4E14163ADA272C1B6F6FABB448CC3E51F522F978041E4B57D9158C", "fixNFTokenReserve", new Semver("2.1.0")));
