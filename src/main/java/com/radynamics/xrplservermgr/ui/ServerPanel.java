@@ -2,6 +2,8 @@ package com.radynamics.xrplservermgr.ui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.radynamics.xrplservermgr.newsfeed.NewsfeedEntry;
+import com.radynamics.xrplservermgr.newsfeed.NewsfeedException;
+import com.radynamics.xrplservermgr.newsfeed.NewsfeedJsonProvider;
 import com.radynamics.xrplservermgr.sshapi.ConnectionInfo;
 import com.radynamics.xrplservermgr.ui.backgroundimage.BackgroundImageListener;
 import com.radynamics.xrplservermgr.ui.backgroundimage.BackgroundImageProvider;
@@ -14,7 +16,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.net.URI;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -79,14 +80,16 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 final var containerWidth = 200;
                 newsfeed.setPreferredSize(new Dimension(containerWidth, newsfeed.getPreferredSize().height));
 
-                var news = java.util.List.of(
-                        NewsfeedEntry.create(Instant.parse("2024-03-28T08:00:00Z"), "rippled 2.1.1 released", "Fixing a critical AMM bug.", URI.create("https://github.com/XRPLF/rippled/pull/4968")),
-                        NewsfeedEntry.create(Instant.parse("2024-02-21T07:00:00Z"), "rippled 2.1.0 released", "Fixing a minor AMM bug.", URI.create("https://xrpl.org/blog/2024/rippled-2.1.0")),
-                        NewsfeedEntry.create(Instant.parse("2024-01-30T14:00:00Z"), "rippled 2.0.1 released", "Fixing various bugs.", URI.create("https://xrpl.org/blog/2024/rippled-2.0.1"))
-                );
-                for (var n : news) {
-                    newsfeed.contentPanel().add(createNewsfeedEntry(n, containerWidth));
-                    newsfeed.contentPanel().add(Box.createVerticalStrut(10));
+                var newsProvider = new NewsfeedJsonProvider();
+                try {
+                    var news = newsProvider.list();
+                    for (var n : news) {
+                        newsfeed.contentPanel().add(createNewsfeedEntry(n, containerWidth));
+                        newsfeed.contentPanel().add(Box.createVerticalStrut(10));
+                    }
+                } catch (NewsfeedException e) {
+                    log.warn(e.getMessage(), e);
+                    newsfeed.contentPanel().add(new JLabel("Could not load newsfeed."));
                 }
                 newsfeed.contentPanel().add(Box.createVerticalGlue());
             }
