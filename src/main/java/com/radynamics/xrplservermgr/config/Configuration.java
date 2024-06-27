@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 public class Configuration {
-    private static Path root() {
+    public static Path root() {
         var home = SystemUtils.IS_OS_WINDOWS ? System.getenv("APPDATA") : System.getProperty("user.home");
         return Paths.get(home, ".xrplServerMgr");
     }

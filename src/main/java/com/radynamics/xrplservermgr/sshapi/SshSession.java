@@ -21,8 +21,9 @@ public class SshSession implements AutoCloseable {
     private final String host;
     private final int port;
     private final String user;
-    private final char[] password;
     private com.jcraft.jsch.Session session;
+    private final String privateKeyFilePath;
+    private final PasswordRequest passwordRequest;
     private final Timer connectionMonitorTimer = new Timer("ConnectionMonitor");
     private boolean previouslyConnected;
     private final ArrayList<ActionLogListener> listener = new ArrayList<>();
@@ -31,15 +32,16 @@ public class SshSession implements AutoCloseable {
     private final Duration infinite = Duration.ofHours(1);
 
     public SshSession(Supplier<char[]> getSudoPassword, ConnectionInfo conn) {
-        this(getSudoPassword, conn.host(), conn.port(), conn.username(), conn.password());
+        this(getSudoPassword, conn.host(), conn.port(), conn.username(), conn.privateKeyFilePath(), conn.passwordRequest());
     }
 
-    public SshSession(Supplier<char[]> getSudoPassword, String host, int port, String user, char[] password) {
+    public SshSession(Supplier<char[]> getSudoPassword, String host, int port, String user, String privateKeyFilePath, PasswordRequest passwordRequest) {
         this.getSudoPassword = getSudoPassword;
         this.host = host;
         this.port = port;
         this.user = user;
-        this.password = password;
+        this.privateKeyFilePath = privateKeyFilePath;
+        this.passwordRequest = passwordRequest;
     }
 
     public void open() throws JSchException {
@@ -48,11 +50,19 @@ public class SshSession implements AutoCloseable {
         var config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
         var jsch = new JSch();
+        var userAndPassword = StringUtils.isEmpty(privateKeyFilePath);
+        if (!userAndPassword) {
+            jsch.addIdentity(privateKeyFilePath, new String(passwordRequest.password()));
+        }
         session = jsch.getSession(user, host, port);
-        session.setPassword(new String(password));
+        if (userAndPassword) {
+            session.setPassword(new String(passwordRequest.password()));
+        }
         session.setConfig(config);
         session.setTimeout(2000);
         session.connect();
+
+        passwordRequest.passwordAccepted(true);
 
         var task = new TimerTask() {
             public void run() {
@@ -163,7 +173,7 @@ public class SshSession implements AutoCloseable {
             var response = outputBuffer.toString(StandardCharsets.UTF_8);
             var error = errorBuffer.toString(StandardCharsets.UTF_8);
             if (!StringUtils.isEmpty(error)) {
-                // installing rippled also prints warnings to error out.
+                // installing rippled also print warnings to error out.
                 raiseOnEvent(ActionLogEvent.warn(error));
             }
 

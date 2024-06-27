@@ -1,5 +1,6 @@
 package com.radynamics.xrplservermgr.ui;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,6 +75,25 @@ public final class Utils {
             });
         }
         return lbl;
+    }
+
+    public static void setRolloverIcon(JToggleButton button) {
+        var icon = button.getIcon();
+        if (icon == null) {
+            return;
+        }
+
+        var rolloverIcon = new FlatSVGIcon((FlatSVGIcon) icon);
+        rolloverIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> Consts.ColorHoover));
+        button.setRolloverIcon(rolloverIcon);
+
+        // Ensure regular icon is shown after click.
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                button.setSelected(false);
+            }
+        });
     }
 
     public static JTextArea formatLabel(JTextArea lbl) {

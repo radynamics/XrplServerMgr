@@ -12,6 +12,34 @@ public class PasswordInput {
         return show(parentComponent, "Please enter root password for sudo operations.", "root required");
     }
 
+    public static char[] connectionPassword(Component parentComponent, String username) {
+        var input = new PasswordInput();
+        var ret = input.show(parentComponent, "Please enter SSH login password for user %s.".formatted(username), "Login password");
+        if (ret == JOptionPane.CANCEL_OPTION || ret == JOptionPane.CLOSED_OPTION) {
+            return null;
+        }
+
+        if (input.password().length == 0) {
+            return connectionPassword(parentComponent, username);
+        }
+
+        return input.password();
+    }
+
+    public static char[] privateKeyFile(Component parentComponent) {
+        var input = new PasswordInput();
+        var ret = input.show(parentComponent, "Please enter password for auth key file.", "password required");
+        if (ret == JOptionPane.CANCEL_OPTION || ret == JOptionPane.CLOSED_OPTION) {
+            return null;
+        }
+
+        if (input.password().length == 0) {
+            return privateKeyFile(parentComponent);
+        }
+
+        return input.password();
+    }
+
     public int show(Component parentComponent, String label, String title) {
         var pnl = new JPanel();
         pnl.setLayout(new GridLayout(2, 1));

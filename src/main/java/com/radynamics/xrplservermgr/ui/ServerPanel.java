@@ -1,14 +1,20 @@
 package com.radynamics.xrplservermgr.ui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.radynamics.xrplservermgr.db.ServerRepo;
+import com.radynamics.xrplservermgr.db.dto.Server;
 import com.radynamics.xrplservermgr.newsfeed.NewsfeedEntry;
 import com.radynamics.xrplservermgr.newsfeed.NewsfeedException;
 import com.radynamics.xrplservermgr.newsfeed.NewsfeedJsonProvider;
 import com.radynamics.xrplservermgr.sshapi.ConnectionInfo;
+import com.radynamics.xrplservermgr.sshapi.PasswordRequest;
+import com.radynamics.xrplservermgr.sshapi.SecretStorePasswordRequest;
 import com.radynamics.xrplservermgr.ui.backgroundimage.BackgroundImageListener;
 import com.radynamics.xrplservermgr.ui.backgroundimage.BackgroundImageProvider;
 import com.radynamics.xrplservermgr.ui.backgroundimage.LittleLedgers;
 import com.radynamics.xrplservermgr.utils.RequestFocusListener;
+import com.radynamics.xrplservermgr.utils.SecretStore;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,6 +31,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     private final ArrayList<ServerPanelListener> listener = new ArrayList<>();
     private final BackgroundImageProvider backgroundImageProvider = new LittleLedgers(); //new XahauMonsters();;
     private final SectionContentPanel serverConnections;
+    private final SecretStore secretStore = new SecretStore();
 
     public ServerPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -44,7 +51,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
             }
             pnl.add(Box.createVerticalStrut(30));
             {
-                var lbl = new JLabel("XRPL Server Manager is a graphical user interface (GUI) toolset for XRPL (rippled) and Xahau (xahaud) servers. With its various tools it facilitates installing and maintaining your nodes.");
+                var lbl = new JLabel("XRPL Server Manager is a graphical user interface (GUI) tool for XRPL (rippled) and Xahau (xahaud) servers. With its various tools it facilitates installing and maintaining your nodes.");
                 pnl.add(lbl);
                 lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
             }
@@ -106,7 +113,7 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 serverConnections.contentPanel().setLayout(new WrapLayout(FlowLayout.LEFT, gap, gap));
 
                 {
-                    var cmd = new ConnectionButton(this, "");
+                    var cmd = new ConnectionButton("");
                     cmd.addActionListener(e -> addConnection());
                     serverConnections.contentPanel().add(cmd);
                     cmd.setBackground(null);
@@ -117,10 +124,28 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 }
 
                 var connections = new ArrayList<ConnectionInfo>();
-                connections.add(new ConnectionInfo("VM Ubuntu 22", "192.168.1.108", 22, "vboxuser", "changeme".toCharArray()));
-                connections.add(new ConnectionInfo("VM Ubuntu Server", "192.168.1.116", 22, "rs", "changeme".toCharArray()));
-                connections.add(new ConnectionInfo("VM RedHat", "192.168.1.114", 22, "vboxuser", "changeme".toCharArray()));
-                connections.add(new ConnectionInfo("ubuntu01", "192.168.1.234", 22, "rsteimen", new char[0]));
+                connections.add(new ConnectionInfo(Server.create("VM Ubuntu 22", "192.168.1.108", 22, "vboxuser"), new PasswordRequest("changeme".toCharArray())));
+                connections.add(new ConnectionInfo(Server.create("VM Ubuntu Server", "192.168.1.116", 22, "rs"), new PasswordRequest("changeme".toCharArray())));
+                connections.add(new ConnectionInfo(Server.create("VM Ubuntu Server keyfile", "192.168.1.116", 22, "rs", "C:\\proj\\XrplServerMgr\\admin\\ubuntu99_id_rsa"), new PasswordRequest(() -> PasswordInput.privateKeyFile(this))));
+                connections.add(new ConnectionInfo(Server.create("VM RedHat", "192.168.1.114", 22, "vboxuser"), new PasswordRequest("changeme".toCharArray())));
+                connections.add(new ConnectionInfo(Server.create("ubuntu01", "192.168.1.234", 22, "rsteimen"), new PasswordRequest(new char[0])));
+
+                java.util.List<Server> servers = new ArrayList<>();
+                try (var repo = new ServerRepo()) {
+                    servers = repo.list();
+                } catch (Exception e) {
+                    ExceptionDialog.show(this, e);
+                }
+
+                for (var s : servers) {
+                    ConnectionInfo conn;
+                    if (StringUtils.isEmpty(s.keyFile())) {
+                        conn = new ConnectionInfo(s, new PasswordRequest(() -> new SecretStorePasswordRequest(this, secretStore, s).password()));
+                    } else {
+                        conn = new ConnectionInfo(s, new PasswordRequest(() -> PasswordInput.privateKeyFile(this)));
+                    }
+                    connections.add(conn);
+                }
 
                 for (var i = 0; i < connections.size(); i++) {
                     var cmd = addConnectionButton(connections.get(i));
@@ -173,29 +198,50 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     }
 
     private JButton addConnectionButton(ConnectionInfo conn) {
-        var cmd = new ConnectionButton(this, conn);
+        var cmd = new ConnectionButton(conn);
         var index = serverConnections.contentPanel().getComponentCount() - 1;
         serverConnections.contentPanel().add(cmd, index);
         return cmd;
     }
 
     private void addConnection() {
-        var conn = editConnection(new ConnectionInfo("", "", 22, "", new char[0]));
-        if (conn == null) {
+        var conn = new ConnectionInfo(Server.create("", "", 22, ""), new PasswordRequest(() -> PasswordInput.connectionPassword(this, "")));
+        if (!editConnection(conn)) {
             return;
         }
         addConnectionButton(conn);
     }
 
-    private ConnectionInfo editConnection(ConnectionInfo ci) {
-        var ce = new ConnectionEdit();
-        var conn = ce.show(this, ci);
-        if (conn == null) {
-            return null;
+    private void removeConnection(ConnectionButton button, ConnectionInfo conn) {
+        var res = JOptionPane.showConfirmDialog(this, "Do you really want to delete connection %s".formatted(conn.name()), MainForm.appTitle, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (res != JOptionPane.YES_OPTION) {
+            return;
         }
 
-        canConnect(conn);
-        return conn;
+        try (var repo = new ServerRepo()) {
+            repo.delete(conn.server());
+            repo.commit();
+            secretStore.connectionPasswordDelete(conn.server().uuid());
+        } catch (Exception ex) {
+            ExceptionDialog.show(this, ex);
+        }
+        serverConnections.contentPanel.remove(button);
+    }
+
+    private boolean editConnection(ConnectionInfo conn) {
+        var ce = new ConnectionEdit(secretStore, conn);
+        if (!ce.show(this)) {
+            return false;
+        }
+
+        try (var repo = new ServerRepo()) {
+            repo.saveOrUpdate(conn.server());
+            repo.commit();
+        } catch (Exception e) {
+            ExceptionDialog.show(this, e);
+        }
+
+        return true;
     }
 
     private void onConnectClick(ConnectionInfo conn) {
@@ -266,17 +312,15 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
     }
 
     private class ConnectionButton extends JButton {
-        private final Component parent;
         private ConnectionInfo conn;
 
-        public ConnectionButton(Component parent, String text) {
-            this.parent = parent;
+        public ConnectionButton(String text) {
             setText(text);
             setPreferredSize(new Dimension(250, 100));
         }
 
-        public ConnectionButton(Component parent, ConnectionInfo conn) {
-            this(parent, conn.name());
+        public ConnectionButton(ConnectionInfo conn) {
+            this(conn.name());
             this.conn = conn;
 
             addActionListener(e -> onConnectClick(this.conn));
@@ -286,23 +330,15 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
 
             var remove = createActionButton("img/trash.svg");
             add((remove));
-            remove.addActionListener(e -> {
-                var res = JOptionPane.showConfirmDialog(parent, "Do you really want to delete connection %s?".formatted(this.conn.name()), MainForm.appTitle, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (res != JOptionPane.YES_OPTION) {
-                    return;
-                }
-                serverConnections.contentPanel.remove(this);
-            });
+            remove.addActionListener(e -> removeConnection(this, this.conn));
 
             var edit = createActionButton("img/pen.svg");
             add(edit);
             edit.addActionListener(e -> {
-                var c = editConnection(this.conn);
-                if (c == null) {
+                if (!editConnection(this.conn)) {
                     return;
                 }
-                setText(c.name());
-                this.conn = c;
+                setText(this.conn.name());
             });
         }
 

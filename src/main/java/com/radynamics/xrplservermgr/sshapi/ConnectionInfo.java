@@ -1,20 +1,17 @@
 package com.radynamics.xrplservermgr.sshapi;
 
+import com.radynamics.xrplservermgr.db.dto.Server;
+import org.apache.commons.lang3.StringUtils;
+
 public class ConnectionInfo {
-    private final String name;
-    private final String host;
-    private final int port;
-    private final String username;
-    private final char[] password;
+    private final Server server;
+    private PasswordRequest passwordRequest;
 
     public final static int defaultPort = 22;
 
-    public ConnectionInfo(String name, String host, int port, String username, char[] password) {
-        this.name = name;
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
+    public ConnectionInfo(Server server, PasswordRequest passwordRequest) {
+        this.server = server;
+        this.passwordRequest = passwordRequest;
     }
 
     public boolean canConnect() {
@@ -27,27 +24,43 @@ public class ConnectionInfo {
     }
 
     public String name() {
-        return name;
+        return server.displayText();
     }
 
     public String host() {
-        return host;
+        return server.host();
     }
 
     public Integer port() {
-        return port;
+        return server().port();
     }
 
     public String username() {
-        return username;
+        return server.username();
     }
 
-    public char[] password() {
-        return password;
+    public String privateKeyFilePath() {
+        return server.keyFile();
+    }
+
+    public PasswordRequest passwordRequest() {
+        return passwordRequest;
+    }
+
+    public void passwordRequest(PasswordRequest passwordRequest) {
+        this.passwordRequest = passwordRequest;
+    }
+
+    public boolean usesUsernameAndPassword() {
+        return StringUtils.isEmpty(privateKeyFilePath());
+    }
+
+    public Server server() {
+        return server;
     }
 
     @Override
     public String toString() {
-        return "%s (%s):%s, u: %s".formatted(name, host, port, username);
+        return "%s (%s):%s, u: %s".formatted(name(), host(), port(), username());
     }
 }

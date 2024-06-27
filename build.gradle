@@ -24,6 +24,9 @@ dependencies {
     implementation group: 'net.coderazzi', name: 'tablefilter-swing', version: '5.5.4'
     implementation 'com.formdev:flatlaf:3.4'
     implementation 'com.formdev:flatlaf-extras:3.4'
+
+    implementation 'io.github.willena:sqlite-jdbc:3.45.1.0'
+    implementation group: 'com.microsoft', name: 'credential-secure-storage', version: '1.0.0'
 }
 
 test {
