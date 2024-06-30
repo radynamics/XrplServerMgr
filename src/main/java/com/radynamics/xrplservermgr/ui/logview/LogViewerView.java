@@ -132,14 +132,12 @@ public class LogViewerView extends JPanel implements TabPage {
     }
 
     public void reload() {
+        final var instance = this;
         try (final var ignored = new WaitCursor(owner)) {
-            var t = new Thread(() -> {
-                try {
-                    load(provider.raw());
-                } catch (Exception e) {
-                    progressBarDialog.setVisible(false);
-                    ExceptionDialog.show(this, e);
-                }
+            var t = new Thread(() -> load(provider.raw()));
+            t.setUncaughtExceptionHandler((t1, e) -> {
+                progressBarDialog.setVisible(false);
+                ExceptionDialog.show(instance, e);
             });
             t.start();
             progressBarDialog.setVisible(true);
