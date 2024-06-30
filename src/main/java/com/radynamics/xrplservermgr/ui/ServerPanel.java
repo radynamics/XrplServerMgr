@@ -124,12 +124,6 @@ public class ServerPanel extends BackgroundImagePanel implements BackgroundImage
                 }
 
                 var connections = new ArrayList<ConnectionInfo>();
-                connections.add(new ConnectionInfo(Server.create("VM Ubuntu 22", "192.168.1.108", 22, "vboxuser"), new PasswordRequest("changeme".toCharArray())));
-                connections.add(new ConnectionInfo(Server.create("VM Ubuntu Server", "192.168.1.116", 22, "rs"), new PasswordRequest("changeme".toCharArray())));
-                connections.add(new ConnectionInfo(Server.create("VM Ubuntu Server keyfile", "192.168.1.116", 22, "rs", "C:\\proj\\XrplServerMgr\\admin\\ubuntu99_id_rsa"), new PasswordRequest(() -> PasswordInput.privateKeyFile(this))));
-                connections.add(new ConnectionInfo(Server.create("VM RedHat", "192.168.1.114", 22, "vboxuser"), new PasswordRequest("changeme".toCharArray())));
-                connections.add(new ConnectionInfo(Server.create("ubuntu01", "192.168.1.234", 22, "rsteimen"), new PasswordRequest(new char[0])));
-
                 java.util.List<Server> servers = new ArrayList<>();
                 try (var repo = new ServerRepo()) {
                     servers = repo.list();
