@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Callable;
 
 public class DbMigration {
@@ -45,6 +47,12 @@ public class DbMigration {
 
     private Void migrateTo1() throws SQLException {
         insertConfig("dbVersion", "0");
+        {
+            final var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
+            final var valueAsString = LocalDateTime.now().format(formatter);
+            insertConfig("firstStarted", valueAsString);
+        }
+
         return null;
     }
 
