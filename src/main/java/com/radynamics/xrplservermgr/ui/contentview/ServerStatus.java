@@ -2,6 +2,7 @@ package com.radynamics.xrplservermgr.ui.contentview;
 
 import com.radynamics.xrplservermgr.sshapi.*;
 import com.radynamics.xrplservermgr.ui.ChownMessageBox;
+import com.radynamics.xrplservermgr.ui.MessageBox;
 import com.radynamics.xrplservermgr.ui.Utils;
 import com.radynamics.xrplservermgr.xrpl.*;
 import com.radynamics.xrplservermgr.xrpl.rippled.Rippled;
@@ -46,6 +47,8 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
 
     private void installXrplBinary() {
         Utils.runAsync(() -> {
+            if (!MessageBox.showBetaFeatureWarning(this)) return;
+
             var pnl = new JPanel();
             pnl.setLayout(new BoxLayout(pnl, BoxLayout.Y_AXIS));
             pnl.add(new JLabel("Which XRPL service would you like to install?"));
@@ -95,6 +98,8 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
 
     private void updateXrplBinary() {
         Utils.runAsync(() -> {
+            if (!MessageBox.showBetaFeatureWarning(this)) return;
+
             var pnl = new JPanel();
             pnl.setLayout(new BoxLayout(pnl, BoxLayout.Y_AXIS));
             var installer = createInstaller(xrplBinary);
