@@ -7,6 +7,8 @@ public class PlatformParser {
         switch (idLike) {
             case "debian":
                 return Platform.Debian;
+            case "fedora":
+                return Platform.Fedora;
             default:
                 return Platform.Unknown;
         }

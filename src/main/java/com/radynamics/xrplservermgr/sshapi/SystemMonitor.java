@@ -2,6 +2,7 @@ package com.radynamics.xrplservermgr.sshapi;
 
 import com.radynamics.xrplservermgr.sshapi.os.Debian;
 import com.radynamics.xrplservermgr.sshapi.os.PlatformSpecific;
+import com.radynamics.xrplservermgr.sshapi.os.RedHat;
 import com.radynamics.xrplservermgr.sshapi.parser.*;
 import com.radynamics.xrplservermgr.xrpl.XrplBinaryPackage;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,8 @@ public class SystemMonitor {
         switch (platform()) {
             case Debian:
                 return new Debian(session);
+            case Fedora:
+                return new RedHat(session);
             default:
                 throw new SshApiException("Platform is not supported.");
         }
