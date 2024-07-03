@@ -13,4 +13,8 @@ public final class MessageBox {
         var resPerm = JOptionPane.showConfirmDialog(parentComponent, sb.toString(), "Beta feature", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         return resPerm == JOptionPane.YES_OPTION;
     }
+
+    public static void info(Component parentComponent, String text) {
+        JOptionPane.showMessageDialog(parentComponent, text, MainForm.appTitle, JOptionPane.INFORMATION_MESSAGE);
+    }
 }

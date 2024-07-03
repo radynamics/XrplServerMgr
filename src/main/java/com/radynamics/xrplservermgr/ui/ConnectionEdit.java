@@ -5,6 +5,7 @@ import com.radynamics.xrplservermgr.sshapi.PasswordRequest;
 import com.radynamics.xrplservermgr.sshapi.SecretStorePasswordRequest;
 import com.radynamics.xrplservermgr.utils.RequestFocusListener;
 import com.radynamics.xrplservermgr.utils.SecretStore;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -95,7 +96,13 @@ public class ConnectionEdit {
             return false;
         }
 
-        conn.server().displayText(txtName.getText());
+        var displayText = txtName.getText();
+        if (StringUtils.isEmpty(displayText)) {
+            MessageBox.info(parent, "Please enter a value for 'Connection Name'");
+            return show(parent);
+        }
+
+        conn.server().displayText(displayText);
         conn.server().host(txtHost.getText());
         conn.server().port(toInteger(txtPort.getText()).orElse(ConnectionInfo.defaultPort));
         conn.server().username(txtUsername.getText());
