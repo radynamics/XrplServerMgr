@@ -30,21 +30,21 @@ public class SystemMonitor {
         this.session = session;
     }
 
-    public Size virtualMemory(String processName) throws SshApiException {
+    public Size memoryUsed(String processName) throws SshApiException {
         // -eg tries to return usage in gibibytes
         var response = session.execute("top -bn1 -eg | grep " + processName).asString();
         if (StringUtils.isEmpty(response)) {
             // True, if service could not be found.
             return null;
         }
-        return Top.parse(response, SizeUnit.GIBIBYTES).virtualMemory();
+        return Top.parse(response, SizeUnit.GIBIBYTES).residentMemory();
     }
 
     public List<DiskUsage> diskUsage() throws SshApiException {
         return DiskUsage.parse(session.execute("df -kP / | awk '{print $1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7}'").asString(), ',');
     }
 
-    public List<Memory> memory() throws SshApiException {
+    public List<Memory> memoryUsed() throws SshApiException {
         return Memory.parse(session.execute("free | awk '{print $1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7}'").asString(), ',');
     }
 
@@ -135,7 +135,7 @@ public class SystemMonitor {
     }
 
     private boolean running(String processName) throws SshApiException {
-        return virtualMemory(processName) == null;
+        return memoryUsed(processName) == null;
     }
 
     public String systemCodename() throws SshApiException {

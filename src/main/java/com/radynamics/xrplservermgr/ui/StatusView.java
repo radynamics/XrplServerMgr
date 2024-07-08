@@ -163,14 +163,14 @@ public class StatusView extends JPanel {
         var r = new Runnable() {
             public synchronized void run() {
                 try {
-                    var memory = systemMonitor.memory().stream().filter(o -> o.path().equals("Mem")).findFirst().orElse(null);
+                    var memory = systemMonitor.memoryUsed().stream().filter(o -> o.path().equals("Mem")).findFirst().orElse(null);
                     refresh(systemMonitor.diskUsage(), memory, systemMonitor.loadAverage());
 
                     if (xrplBinary == null) {
                         refresh((ServerInfo) null, null, null);
                     } else {
                         xrplBinary.refresh();
-                        refresh(xrplBinary.serverInfo(), xrplBinary.config(), systemMonitor.virtualMemory(xrplBinary.processName()));
+                        refresh(xrplBinary.serverInfo(), xrplBinary.config(), systemMonitor.memoryUsed(xrplBinary.processName()));
                     }
                 } catch (SshApiException e) {
                     log.error(e.getMessage(), e);
