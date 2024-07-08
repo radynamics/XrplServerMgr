@@ -16,7 +16,7 @@ public class Utils {
 
     public static String kibToGbText(Long value) {
         var df = new DecimalFormat("#.##");
-        return df.format(value * 0.000001024d);
+        return df.format(value * 0.001024 * 0.001024);
     }
 
     public static Long bytesToKb(Long value) {
