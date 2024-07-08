@@ -6,17 +6,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.Scanner;
 
 public class Utils {
     public static String toHexString(Color color) {
         return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
-    }
-
-    public static String kibToGbText(Long value) {
-        var df = new DecimalFormat("#.##");
-        return df.format(value * 0.001024 * 0.001024);
     }
 
     public static Long bytesToKb(Long value) {

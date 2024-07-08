@@ -1,9 +1,18 @@
 package com.radynamics.xrplservermgr.datasize;
 
 public class SizeConverter {
-    public static final Size toGb(Size value) {
-        if (value.unit() == SizeUnit.GIBIBYTES) return Size.of(value.value() * 1.074, SizeUnit.GIGABYTES);
+    public static Size toGb(Size value) {
+        var result = convert(value);
+        if (result.unit() == SizeUnit.KILOBYTES) result = Size.of(result.value() / 1000, SizeUnit.MEGABYTES);
+        if (result.unit() == SizeUnit.MEGABYTES) result = Size.of(result.value() / 1000, SizeUnit.GIGABYTES);
+        return result;
+    }
 
-        throw new IllegalStateException("Conversion %s -> %s is not available: ".formatted(value.unit().shortName(), "GB"));
+    private static Size convert(Size value) {
+        var converted = value;
+        if (value.unit() == SizeUnit.KIBIBYTES) converted = Size.of(value.value() * 1.024, SizeUnit.KILOBYTES);
+        if (value.unit() == SizeUnit.MEBIBYTES) converted = Size.of(value.value() * 1.048576, SizeUnit.MEGABYTES);
+        if (value.unit() == SizeUnit.GIBIBYTES) converted = Size.of(value.value() * 1.073741824, SizeUnit.GIGABYTES);
+        return converted;
     }
 }

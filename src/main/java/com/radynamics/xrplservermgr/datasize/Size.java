@@ -9,6 +9,10 @@ public class Size {
         this.unit = unit;
     }
 
+    public static Size of(Long value, SizeUnit unit) {
+        return of(value.doubleValue(), unit);
+    }
+
     public static Size of(Double value, SizeUnit unit) {
         return new Size(value, unit);
     }

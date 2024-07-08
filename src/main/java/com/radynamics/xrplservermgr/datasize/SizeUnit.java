@@ -1,7 +1,12 @@
 package com.radynamics.xrplservermgr.datasize;
 
 public enum SizeUnit {
+    KILOBYTES("KB", "kilobytes"),
+    MEGABYTES("MB", "megabytes"),
     GIGABYTES("GB", "gigabytes"),
+
+    KIBIBYTES("KiB", "kibibytes"),
+    MEBIBYTES("MiB", "mebibytes"),
     GIBIBYTES("GiB", "gibibytes");
 
     private final String shortName;

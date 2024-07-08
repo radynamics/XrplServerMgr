@@ -236,7 +236,7 @@ public class StatusView extends JPanel {
         if (memory == null) {
             lblSystemRam.setText("unknown");
         } else {
-            lblSystemRam.setText("%s / %s GB".formatted(com.radynamics.xrplservermgr.utils.Utils.kibToGbText(memory.used()), com.radynamics.xrplservermgr.utils.Utils.kibToGbText(memory.total())));
+            lblSystemRam.setText("%s / %s GB".formatted(SizeFormatter.formatNumber(SizeConverter.toGb(memory.used())), SizeFormatter.formatNumber(SizeConverter.toGb(memory.total()))));
             lblSystemRam.setToolTipText(lblSystemRam.getText());
         }
 

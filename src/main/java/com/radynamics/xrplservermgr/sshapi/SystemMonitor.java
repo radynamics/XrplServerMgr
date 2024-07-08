@@ -45,7 +45,7 @@ public class SystemMonitor {
     }
 
     public List<Memory> memoryUsed() throws SshApiException {
-        return Memory.parse(session.execute("free | awk '{print $1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7}'").asString(), ',');
+        return Memory.parse(session.execute("free | awk '{print $1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7}'").asString(), ',', SizeUnit.KIBIBYTES);
     }
 
     public Uptime loadAverage() throws SshApiException {
