@@ -2,14 +2,15 @@ package com.radynamics.xrplservermgr.ui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.extras.components.FlatButton;
+import com.radynamics.xrplservermgr.datasize.Size;
+import com.radynamics.xrplservermgr.datasize.SizeConverter;
+import com.radynamics.xrplservermgr.datasize.SizeFormatter;
 import com.radynamics.xrplservermgr.sshapi.ConnectionInfo;
 import com.radynamics.xrplservermgr.sshapi.SshApiException;
 import com.radynamics.xrplservermgr.sshapi.SystemMonitor;
 import com.radynamics.xrplservermgr.sshapi.parser.DiskUsage;
 import com.radynamics.xrplservermgr.sshapi.parser.Memory;
 import com.radynamics.xrplservermgr.sshapi.parser.Uptime;
-import com.radynamics.xrplservermgr.datasize.Size;
-import com.radynamics.xrplservermgr.datasize.SizeFormatter;
 import com.radynamics.xrplservermgr.xrpl.XrplBinary;
 import com.radynamics.xrplservermgr.xrpl.XrplUtil;
 import com.radynamics.xrplservermgr.xrpl.parser.ConfigCfg;
@@ -228,7 +229,7 @@ public class StatusView extends JPanel {
         }
         lblPublicKey.setText(publicKey);
 
-        lblXrplRam.setText(xrplRamUsed == null ? "" : SizeFormatter.format(xrplRamUsed));
+        lblXrplRam.setText(xrplRamUsed == null ? "" : SizeFormatter.format(SizeConverter.toGb(xrplRamUsed)));
     }
 
     private void refresh(List<DiskUsage> diskUsages, Memory memory, Uptime load) {
