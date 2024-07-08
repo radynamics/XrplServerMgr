@@ -7,6 +7,7 @@ import com.radynamics.xrplservermgr.xrpl.parser.ConfigCfg;
 import com.radynamics.xrplservermgr.xrpl.parser.ValidatorsTxt;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,17 +23,26 @@ public class ConfigurationView extends ContentView {
         super(parent);
         this.host = host;
 
-        cmdEdit = appendButton("edit .cfg file", this::editConfig);
-        cmdBackupCfg = appendButton("backup .cfg file", this::localSaveConfigCfg);
-        cmdBackupWalletDb = appendButton("backup wallet.db", this::localSaveWalletDb);
-        cmdEditValidators = appendButton("edit validators.txt", this::editValidators);
+        cmdEdit = appendButton("", this::editConfig);
+        cmdEditValidators = appendButton("edit validators.txt...", this::editValidators);
+        cmdBackupCfg = appendButton("", this::localSaveConfigCfg);
+        cmdBackupWalletDb = appendButton("<html>save wallet.db<br />to local computer</html>", this::localSaveWalletDb);
     }
 
     private JButton appendButton(String caption, Runnable r) {
         var cmd = new JButton(caption);
+        cmd.setPreferredSize(new Dimension(150, 50));
+        cmd.setMinimumSize(cmd.getPreferredSize());
+        cmd.setMaximumSize(cmd.getPreferredSize());
         add(cmd);
         cmd.addActionListener(e -> r.run());
         return cmd;
+    }
+
+    @Override
+    protected void refresh() {
+        cmdEdit.setText("edit %s...".formatted(xrplBinary.configFileName()));
+        cmdBackupCfg.setText("<html>save %s<br />to local computer</html>".formatted(xrplBinary.configFileName()));
     }
 
     private void editConfig() {
