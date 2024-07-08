@@ -1,5 +1,7 @@
 package com.radynamics.xrplservermgr.sshapi;
 
+import com.radynamics.xrplservermgr.datasize.Size;
+import com.radynamics.xrplservermgr.datasize.SizeUnit;
 import com.radynamics.xrplservermgr.sshapi.os.Debian;
 import com.radynamics.xrplservermgr.sshapi.os.PlatformSpecific;
 import com.radynamics.xrplservermgr.sshapi.os.RedHat;
@@ -28,14 +30,14 @@ public class SystemMonitor {
         this.session = session;
     }
 
-    public String virtualMemory(String processName) throws SshApiException {
+    public Size virtualMemory(String processName) throws SshApiException {
         // -eg tries to return usage in gibibytes
         var response = session.execute("top -bn1 -eg | grep " + processName).asString();
         if (StringUtils.isEmpty(response)) {
             // True, if service could not be found.
             return null;
         }
-        return Top.parse(response).virtualMemory();
+        return Top.parse(response, SizeUnit.GIBIBYTES).virtualMemory();
     }
 
     public List<DiskUsage> diskUsage() throws SshApiException {
@@ -133,7 +135,7 @@ public class SystemMonitor {
     }
 
     private boolean running(String processName) throws SshApiException {
-        return !StringUtils.isEmpty(virtualMemory(processName));
+        return virtualMemory(processName) == null;
     }
 
     public String systemCodename() throws SshApiException {

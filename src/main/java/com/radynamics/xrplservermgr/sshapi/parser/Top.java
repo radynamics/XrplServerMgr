@@ -1,20 +1,25 @@
 package com.radynamics.xrplservermgr.sshapi.parser;
 
-public class Top {
-    private String virtualMemory;
+import com.radynamics.xrplservermgr.datasize.Size;
+import com.radynamics.xrplservermgr.datasize.SizeUnit;
 
-    public static Top parse(String line) {
+public class Top {
+    private Size virtualMemory;
+
+    public static Top parse(String line, SizeUnit sizeUnit) {
         // line eg. " 182620 rippled   20   0   16.3g  14.8g 405888 S   6.2  47.4   1380:52 rippled"
         var o = new Top();
-        o.virtualMemory(line.substring(24, 32).trim());
+        // 16.3
+        var value = Double.parseDouble(line.substring(24, 31).trim().replace(",", "."));
+        o.virtualMemory(Size.of(value, sizeUnit));
         return o;
     }
 
-    private void virtualMemory(String virtualMemory) {
+    private void virtualMemory(Size virtualMemory) {
         this.virtualMemory = virtualMemory;
     }
 
-    public String virtualMemory() {
+    public Size virtualMemory() {
         return virtualMemory;
     }
 }

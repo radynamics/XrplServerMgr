@@ -8,6 +8,8 @@ import com.radynamics.xrplservermgr.sshapi.SystemMonitor;
 import com.radynamics.xrplservermgr.sshapi.parser.DiskUsage;
 import com.radynamics.xrplservermgr.sshapi.parser.Memory;
 import com.radynamics.xrplservermgr.sshapi.parser.Uptime;
+import com.radynamics.xrplservermgr.datasize.Size;
+import com.radynamics.xrplservermgr.datasize.SizeFormatter;
 import com.radynamics.xrplservermgr.xrpl.XrplBinary;
 import com.radynamics.xrplservermgr.xrpl.XrplUtil;
 import com.radynamics.xrplservermgr.xrpl.parser.ConfigCfg;
@@ -194,7 +196,7 @@ public class StatusView extends JPanel {
         lblXrplRam.setText("");
     }
 
-    private void refresh(ServerInfo serverInfo, ConfigCfg config, String xrplRamUsed) {
+    private void refresh(ServerInfo serverInfo, ConfigCfg config, Size xrplRamUsed) {
         lblXrplStatus.setForeground(lblHostId.getForeground());
         if (serverInfo == null) {
             lblXrplStatus.setText("(not installed)");
@@ -205,7 +207,7 @@ public class StatusView extends JPanel {
             lblXrplStatus.setForeground(Consts.ColorLightRed);
             lblXrplStatus.setText("(Amendment Blocked)");
         } else {
-            var running = !xrplRamUsed.isEmpty();
+            var running = xrplRamUsed != null;
             if (running) {
                 lblXrplStatus.setText("");
             } else {
@@ -226,7 +228,7 @@ public class StatusView extends JPanel {
         }
         lblPublicKey.setText(publicKey);
 
-        lblXrplRam.setText(xrplRamUsed);
+        lblXrplRam.setText(xrplRamUsed == null ? "" : SizeFormatter.format(xrplRamUsed));
     }
 
     private void refresh(List<DiskUsage> diskUsages, Memory memory, Uptime load) {
