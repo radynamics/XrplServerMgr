@@ -23,6 +23,7 @@ public class LogViewerView extends JPanel implements TabPage {
     private final Window owner;
     private final ProgressBarDialog progressBarDialog;
     private LogProvider provider;
+    private final JButton _cmdRefresh;
     private final LogEventTableModel model;
     private String datasource = "";
 
@@ -49,10 +50,10 @@ public class LogViewerView extends JPanel implements TabPage {
             cmd.addActionListener(e -> onSaveClick());
         }
         {
-            var cmd = new JButton("refresh");
-            toolbar.add(cmd);
-            cmd.setIcon(new FlatSVGIcon("img/refresh.svg"));
-            cmd.addActionListener(e -> refresh());
+            _cmdRefresh = new JButton("refresh");
+            toolbar.add(_cmdRefresh);
+            _cmdRefresh.setIcon(new FlatSVGIcon("img/refresh.svg"));
+            _cmdRefresh.addActionListener(e -> refresh());
         }
 
         model = new LogEventTableModel();
@@ -148,6 +149,10 @@ public class LogViewerView extends JPanel implements TabPage {
         datasource = raw;
         var events = LogParser.parse(datasource);
         model.setData(events.stream().sorted(Comparator.comparing(LogEvent::dateTime).reversed()).collect(Collectors.toList()));
+    }
+
+    public void setRefreshEnabled(boolean enabled) {
+        _cmdRefresh.setEnabled(enabled);
     }
 
     @Override

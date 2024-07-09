@@ -6,14 +6,23 @@ import com.radynamics.xrplservermgr.ui.logview.LogViewerView;
 import javax.swing.*;
 
 public class LogsView extends ContentView {
+    private final LogViewerView _view;
+
     public LogsView(JFrame parent, LogProvider provider) {
         super(parent);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        var view = new LogViewerView(parent, provider);
-        add(view);
-        view.reload();
+        _view = new LogViewerView(parent, provider);
+        add(_view);
+        _view.reload();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        _view.setRefreshEnabled(enabled);
     }
 
     @Override
