@@ -71,7 +71,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
         pnlButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         showTopButtons(false);
 
-        cmdConnect = appendButton("connect", () -> {
+        cmdConnect = appendButton("Reconnect", () -> {
             try {
                 openSession();
             } catch (JSchException e) {
@@ -95,6 +95,9 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
 
     private JButton appendButton(String caption, Runnable r) {
         var cmd = new JButton(caption);
+        cmd.setPreferredSize(new Dimension(150, 50));
+        cmd.setMinimumSize(cmd.getPreferredSize());
+        cmd.setMaximumSize(cmd.getPreferredSize());
         pnlButtons.add(cmd);
         cmd.addActionListener(e -> r.run());
         return cmd;
