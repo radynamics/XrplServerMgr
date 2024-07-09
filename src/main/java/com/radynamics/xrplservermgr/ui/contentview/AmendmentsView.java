@@ -12,26 +12,16 @@ import java.util.stream.Collectors;
 
 public class AmendmentsView extends ContentView {
     private final JTextArea txt;
-    private final JButton cmdListFeatures;
 
     public AmendmentsView(JFrame parent) {
         super(parent);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        cmdListFeatures = appendButton("list features", this::listFeatures);
-
         txt = new JTextArea();
         txt.setEditable(false);
         txt.setLineWrap(true);
         add(txt);
-    }
-
-    private JButton appendButton(String caption, Runnable r) {
-        var cmd = new JButton(caption);
-        add(cmd);
-        cmd.addActionListener(e -> r.run());
-        return cmd;
     }
 
     private void listFeatures() {
@@ -41,15 +31,23 @@ public class AmendmentsView extends ContentView {
                 if (xrplBinary.features() == null) {
                     return;
                 }
+
                 var sb = new StringBuilder();
-                sb.append("=== rippled feature count: %s\n".formatted(xrplBinary.features().all().size()));
-                sb.append("=== Voted in favor: %s\n".formatted(toString(xrplBinary.features().votedInFavor())));
-                var newest = xrplBinary.features().all().stream()
+                var votedYea = xrplBinary.features().votedInFavor().stream()
                         .filter(o -> !o.enabled() && !o.obsolete())
                         .sorted(Features.createComparator())
                         .limit(10)
                         .collect(Collectors.toList());
-                sb.append("=== Newest: %s\n".formatted(toString(newest)));
+                sb.append("=== Voted in favor:\n");
+                append(sb, votedYea);
+
+                var newest = xrplBinary.features().all().stream()
+                        .sorted(Features.createComparator())
+                        .limit(10)
+                        .collect(Collectors.toList());
+                sb.append("\n");
+                sb.append("=== Newest:\n");
+                append(sb, newest);
 
                 txt.setText(sb.toString());
             } catch (SshApiException | RippledCommandException e) {
@@ -58,12 +56,18 @@ public class AmendmentsView extends ContentView {
         });
     }
 
-    private static StringBuilder toString(List<Feature> features) {
-        var sb = new StringBuilder();
-        for (var f : features) {
-            sb.append(f.name() + ", ");
+    private void append(StringBuilder sb, List<Feature> list) {
+        for (var e : list) {
+            var versionIntroducedText = e.versionIntroduced() == null ? "unk" : e.versionIntroduced().toString();
+            sb.append("- [%s] %s\n".formatted(versionIntroducedText, e.nameOrHash()));
         }
-        return sb;
+    }
+
+    @Override
+    protected void refresh() {
+        super.refresh();
+
+        listFeatures();
     }
 
     @Override
@@ -74,12 +78,5 @@ public class AmendmentsView extends ContentView {
     @Override
     public void close() {
 
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-
-        cmdListFeatures.setEnabled(enabled);
     }
 }
