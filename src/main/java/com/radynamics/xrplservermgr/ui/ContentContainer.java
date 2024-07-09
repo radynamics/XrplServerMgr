@@ -8,6 +8,7 @@ import com.radynamics.xrplservermgr.xrpl.XrplBinary;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -24,9 +25,14 @@ public class ContentContainer extends JPanel {
         tabbedPane.putClientProperty(FlatClientProperties.TABBED_PANE_TAB_CLOSE_TOOLTIPTEXT, "Close");
         tabbedPane.putClientProperty(FlatClientProperties.TABBED_PANE_TAB_TYPE, FlatClientProperties.TABBED_PANE_TAB_TYPE_CARD);
         tabbedPane.putClientProperty(FlatClientProperties.TABBED_PANE_TAB_CLOSE_CALLBACK, (BiConsumer<JTabbedPane, Integer>) (tabPane, tabIndex) -> {
-            ((ContentView) tabbedPane.getComponentAt(tabIndex)).close();
-            tabbedPane.removeTabAt(tabIndex);
+            closeTab((ContentView) tabbedPane.getComponentAt(tabIndex));
         });
+        tabbedPane.registerKeyboardAction(e -> {
+            if (tabbedPane.getSelectedComponent() != null) {
+                closeTab((ContentView) tabbedPane.getSelectedComponent());
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_F4, Event.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
         var outputPane = new JPanel();
         outputPane.setLayout(new BoxLayout(outputPane, BoxLayout.Y_AXIS));
         {
@@ -81,6 +87,15 @@ public class ContentContainer extends JPanel {
             }
         }
         return list;
+    }
+
+    private void closeTab(ContentView view) {
+        view.close();
+
+        var index = indexOf(view);
+        if (index != -1) {
+            tabbedPane.removeTabAt(index);
+        }
     }
 
     @Override
