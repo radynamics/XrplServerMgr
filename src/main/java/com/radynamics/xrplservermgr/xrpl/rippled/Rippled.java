@@ -124,6 +124,11 @@ public class Rippled implements XrplBinary {
         systemMonitor.remove(serverLogRemotePath, false);
     }
 
+    @Override
+    public XrplPaths remotePaths() throws SshApiException {
+        return new XrplPaths(processRemotePath(), configRemotePath(), serverLogRemotePath, serverDatabasePath, validatorsTxtPath);
+    }
+
     public SshSession session() {
         return session;
     }
@@ -161,6 +166,11 @@ public class Rippled implements XrplBinary {
     @Override
     public Peers peers() {
         return peers;
+    }
+
+    @Override
+    public XrplType type() {
+        return XrplType.XrpLedger;
     }
 
     public String packageName() {

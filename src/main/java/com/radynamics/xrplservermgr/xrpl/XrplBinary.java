@@ -10,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public interface XrplBinary {
+    XrplType type();
+
     String packageName();
 
     String processName();
@@ -62,4 +64,6 @@ public interface XrplBinary {
     void deleteDatabase() throws SshApiException;
 
     void deleteDebugLog() throws SshApiException;
+
+    XrplPaths remotePaths() throws SshApiException;
 }

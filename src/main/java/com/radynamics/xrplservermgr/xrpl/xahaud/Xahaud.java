@@ -45,6 +45,15 @@ public class Xahaud implements XrplBinary {
         rippled.deleteDebugLog();
     }
 
+    public XrplPaths remotePaths() throws SshApiException {
+        return rippled.remotePaths();
+    }
+
+    @Override
+    public XrplType type() {
+        return XrplType.Xahau;
+    }
+
     @Override
     public String packageName() {
         return this.rippled.packageName();

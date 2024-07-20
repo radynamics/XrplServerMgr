@@ -1,48 +1,261 @@
 package com.radynamics.xrplservermgr.ui.contentview;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.radynamics.xrplservermgr.sshapi.*;
-import com.radynamics.xrplservermgr.ui.ChownMessageBox;
-import com.radynamics.xrplservermgr.ui.MessageBox;
-import com.radynamics.xrplservermgr.ui.Utils;
+import com.radynamics.xrplservermgr.ui.*;
 import com.radynamics.xrplservermgr.xrpl.*;
 import com.radynamics.xrplservermgr.xrpl.rippled.Rippled;
 import com.radynamics.xrplservermgr.xrpl.xahaud.Xahaud;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class ServerStatus extends ContentView implements ActionLogListener, XrplInstallerListener {
     private boolean xrplInstalled;
     private final ArrayList<ServerStatusListener> listener = new ArrayList<>();
     private final JButton cmdInstall;
     private final JButton cmdUpdate;
+    private final JButton cmdStop;
+    private final JButton cmdStart;
     private final JButton cmdRestart;
     private final JButton cmdDeleteServiceDb;
     private final JButton cmdDeleteDebugLog;
+    private final JLabel lblIcon = new JLabel();
+    private final JLabel lblRunningSince = new JLabel("unknown");
+    private final JLabel lblXrplState = new JLabel("unknown");
+    private final JPanel pnlServerFeatures = new JPanel();
+    private final SpringLayout serverFeaturesSpringLayout = new SpringLayout();
+    private final JTextField lblInstallPath = Utils.formatAsLabel(new JTextField());
+    private final RemoteFilePathLabel lblConfigPath = new RemoteFilePathLabel();
+    private final RemoteFilePathLabel lblLogPath = new RemoteFilePathLabel();
+    private final JTextField lblDatabasePath = Utils.formatAsLabel(new JTextField());
+    private final RemoteFilePathLabel lblValidators = new RemoteFilePathLabel();
 
-    public ServerStatus(JFrame parent) {
+    public ServerStatus(JFrame parent, ConnectionInfo conn) {
         super(parent);
 
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        var mainLayout = new SpringLayout();
+        setLayout(mainLayout);
+        final var iconOffsetEast = 20;
         {
-            var pnl = new JPanel();
-            add(pnl);
-            cmdInstall = appendButton(pnl, "install xrpl binary", this::installXrplBinary);
-            cmdUpdate = appendButton(pnl, "update xrpl binary", this::updateXrplBinary);
-            appendButton(pnl, "stop service", this::stopService);
-            appendButton(pnl, "start service", this::startService);
-            cmdRestart = appendButton(pnl, "restart service", this::restartService);
-            cmdDeleteServiceDb = appendButton(pnl, "delete service databases", this::deleteServiceDb);
-            cmdDeleteDebugLog = appendButton(pnl, "delete debug.log", this::deleteDebugLog);
+            var pnlConnection = new JPanel();
+            {
+                add(pnlConnection);
+                mainLayout.putConstraint(SpringLayout.NORTH, pnlConnection, 0, SpringLayout.NORTH, this);
+                pnlConnection.setPreferredSize(new Dimension(500, 150));
+                var sl = new SpringLayout();
+                pnlConnection.setLayout(sl);
+                {
+                    pnlConnection.add(lblIcon);
+                    sl.putConstraint(SpringLayout.WEST, lblIcon, 0, SpringLayout.WEST, pnlConnection);
+                    sl.putConstraint(SpringLayout.NORTH, lblIcon, 0, SpringLayout.NORTH, pnlConnection);
+
+                    var pnlConnectionName = new JPanel();
+                    {
+                        pnlConnection.add(pnlConnectionName);
+                        sl.putConstraint(SpringLayout.WEST, pnlConnectionName, iconOffsetEast, SpringLayout.EAST, lblIcon);
+                        sl.putConstraint(SpringLayout.NORTH, pnlConnectionName, 0, SpringLayout.NORTH, pnlConnection);
+                        pnlConnectionName.setLayout(new BoxLayout(pnlConnectionName, BoxLayout.Y_AXIS));
+                        {
+                            pnlConnectionName.add(new JLabel("Connection Name"));
+                        }
+                        {
+                            var lbl = new JLabel(conn.name());
+                            pnlConnectionName.add(lbl);
+                            lbl.putClientProperty("FlatLaf.styleClass", "h2");
+                        }
+                    }
+
+                    var data = new LinkedHashMap<String, JLabel>();
+                    data.put("Host", new JLabel(conn.host()));
+                    data.put("Username", new JLabel(conn.username()));
+                    data.put("Server start", lblRunningSince);
+                    data.put("XRPL Status", lblXrplState);
+
+                    var counter = 0;
+                    for (var e : data.entrySet()) {
+                        final var TOP_OFFSET = 10;
+                        final var HEIGHT = 20;
+                        var north = counter * HEIGHT + TOP_OFFSET;
+                        var lbl = new JLabel("%s:".formatted(e.getKey()));
+                        pnlConnection.add(lbl);
+                        sl.putConstraint(SpringLayout.WEST, lbl, 0, SpringLayout.WEST, pnlConnectionName);
+                        sl.putConstraint(SpringLayout.NORTH, lbl, north, SpringLayout.SOUTH, pnlConnectionName);
+
+                        var value = e.getValue();
+                        pnlConnection.add(value);
+                        sl.putConstraint(SpringLayout.WEST, value, 100, SpringLayout.WEST, lbl);
+                        sl.putConstraint(SpringLayout.NORTH, value, 0, SpringLayout.NORTH, lbl);
+
+                        counter++;
+                    }
+                }
+            }
+            {
+                add(pnlServerFeatures);
+                mainLayout.putConstraint(SpringLayout.NORTH, pnlServerFeatures, 0, SpringLayout.SOUTH, pnlConnection);
+                mainLayout.putConstraint(SpringLayout.WEST, pnlServerFeatures, iconOffsetEast, SpringLayout.EAST, lblIcon);
+                pnlServerFeatures.setPreferredSize(new Dimension(500, 130));
+                pnlServerFeatures.setLayout(serverFeaturesSpringLayout);
+                {
+                    var lbl = new JLabel("Server Features");
+                    pnlServerFeatures.add(lbl);
+                    lbl.putClientProperty("FlatLaf.styleClass", "h3");
+                    serverFeaturesSpringLayout.putConstraint(SpringLayout.WEST, lbl, 0, SpringLayout.WEST, pnlServerFeatures);
+                    serverFeaturesSpringLayout.putConstraint(SpringLayout.NORTH, lbl, 0, SpringLayout.NORTH, pnlServerFeatures);
+                }
+            }
+            {
+                var pnlDirectories = new JPanel();
+                add(pnlDirectories);
+                mainLayout.putConstraint(SpringLayout.NORTH, pnlDirectories, 0, SpringLayout.SOUTH, pnlServerFeatures);
+                mainLayout.putConstraint(SpringLayout.WEST, pnlDirectories, iconOffsetEast, SpringLayout.EAST, lblIcon);
+                pnlDirectories.setPreferredSize(new Dimension(500, 130));
+                var sl = new SpringLayout();
+                pnlDirectories.setLayout(sl);
+                {
+                    var lbl = new JLabel("Server Directories");
+                    pnlDirectories.add(lbl);
+                    lbl.putClientProperty("FlatLaf.styleClass", "h3");
+                    sl.putConstraint(SpringLayout.WEST, lbl, 0, SpringLayout.WEST, pnlDirectories);
+                    sl.putConstraint(SpringLayout.NORTH, lbl, 0, SpringLayout.NORTH, pnlDirectories);
+                }
+
+                var data = new LinkedHashMap<String, Component>();
+                data.put("Installation", lblInstallPath);
+                data.put("Configuration", lblConfigPath);
+                data.put("Log", lblLogPath);
+                data.put("Database", lblDatabasePath);
+                data.put("Validators", lblValidators);
+
+                var counter = 0;
+                for (var e : data.entrySet()) {
+                    final var TOP_OFFSET = 20;
+                    final var HEIGHT = 20;
+                    var north = counter * HEIGHT + TOP_OFFSET;
+                    var lbl = new JLabel("%s:".formatted(e.getKey()));
+                    pnlDirectories.add(lbl);
+                    sl.putConstraint(SpringLayout.WEST, lbl, 0, SpringLayout.WEST, pnlDirectories);
+                    sl.putConstraint(SpringLayout.NORTH, lbl, north, SpringLayout.NORTH, pnlDirectories);
+
+                    var value = e.getValue();
+                    pnlDirectories.add(value);
+                    sl.putConstraint(SpringLayout.WEST, value, 130, SpringLayout.WEST, lbl);
+                    sl.putConstraint(SpringLayout.NORTH, value, 0, SpringLayout.NORTH, lbl);
+
+                    counter++;
+                }
+            }
+        }
+        {
+            var actions = new JPanel();
+            add(actions);
+            mainLayout.putConstraint(SpringLayout.NORTH, actions, 0, SpringLayout.NORTH, this);
+            mainLayout.putConstraint(SpringLayout.EAST, actions, 0, SpringLayout.EAST, this);
+            mainLayout.putConstraint(SpringLayout.SOUTH, actions, 0, SpringLayout.SOUTH, this);
+            actions.setLayout(new BoxLayout(actions, BoxLayout.Y_AXIS));
+            actions.setPreferredSize(new Dimension(150, getHeight()));
+            {
+                final var smallGap = 5;
+                final var largeGap = 40;
+                cmdInstall = createActionButton("Install XRPL", this::installXrplBinary);
+                actions.add(cmdInstall);
+                actions.add(Box.createVerticalStrut(smallGap));
+                cmdUpdate = createActionButton("Update XRPL", this::updateXrplBinary);
+                actions.add(cmdUpdate);
+                actions.add(Box.createVerticalStrut(largeGap));
+
+                cmdStop = createActionButton("Stop XRPL Service", this::stopService);
+                actions.add(cmdStop);
+                actions.add(Box.createVerticalStrut(smallGap));
+                cmdStart = createActionButton("Start XRPL Service", this::startService);
+                actions.add(cmdStart);
+                actions.add(Box.createVerticalStrut(smallGap));
+                cmdRestart = createActionButton("Restart XRPL Service", this::restartService);
+                actions.add(cmdRestart);
+                actions.add(Box.createVerticalStrut(largeGap));
+
+                cmdDeleteServiceDb = createActionButton("Delete XRPL database", this::deleteServiceDb);
+                actions.add(cmdDeleteServiceDb);
+                actions.add(Box.createVerticalStrut(smallGap));
+                cmdDeleteDebugLog = createActionButton("Delete XRPL log", this::deleteDebugLog);
+                actions.add(cmdDeleteDebugLog);
+
+                actions.add(Box.createVerticalGlue());
+            }
+        }
+
+        lblConfigPath.addRemoteFilePathLabelListener(() -> saveRemoteFileLocally(lblConfigPath.getText()));
+        lblLogPath.addRemoteFilePathLabelListener(() -> saveRemoteFileLocally(lblLogPath.getText()));
+        lblValidators.addRemoteFilePathLabelListener(() -> saveRemoteFileLocally(lblValidators.getText()));
+    }
+
+    private void createServerFeatures(LinkedHashMap<String, String> data) {
+        // First element is title
+        for (var i = pnlServerFeatures.getComponentCount() - 1; i > 1; i--) {
+            pnlServerFeatures.remove(i);
+        }
+
+        var counter = 0;
+        for (var e : data.entrySet()) {
+            final var TOP_OFFSET = 20;
+            final var HEIGHT = 20;
+            var north = counter * HEIGHT + TOP_OFFSET;
+            var lbl = new JLabel("%s:".formatted(e.getKey()));
+            pnlServerFeatures.add(lbl);
+            serverFeaturesSpringLayout.putConstraint(SpringLayout.WEST, lbl, 0, SpringLayout.WEST, pnlServerFeatures);
+            serverFeaturesSpringLayout.putConstraint(SpringLayout.NORTH, lbl, north, SpringLayout.NORTH, pnlServerFeatures);
+
+            var value = new JLabel(e.getValue());
+            pnlServerFeatures.add(value);
+            serverFeaturesSpringLayout.putConstraint(SpringLayout.WEST, value, 130, SpringLayout.WEST, lbl);
+            serverFeaturesSpringLayout.putConstraint(SpringLayout.NORTH, value, 0, SpringLayout.NORTH, lbl);
+
+            counter++;
         }
     }
 
-    private JButton appendButton(JPanel pnl, String caption, Runnable r) {
+    private JButton createActionButton(String caption, Runnable action) {
         var cmd = new JButton(caption);
-        pnl.add(cmd);
-        cmd.addActionListener(e -> r.run());
+        cmd.setPreferredSize(new Dimension(150, 35));
+        cmd.setMinimumSize(cmd.getPreferredSize());
+        cmd.setMaximumSize(cmd.getPreferredSize());
+        cmd.addActionListener(e -> action.run());
         return cmd;
+    }
+
+    private void saveRemoteFileLocally(String remotePath) {
+        var fileName = Path.of(remotePath).getFileName().toString();
+
+        var fc = new JFileChooser();
+        fc.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fc.setSelectedFile(new File(fileName));
+        int option = fc.showSaveDialog(this);
+        if (option != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        var outputPath = fc.getSelectedFile().getAbsolutePath();
+
+        try {
+            var out = new ByteArrayOutputStream();
+            session.get(remotePath, out);
+            try (var fos = new FileOutputStream(outputPath)) {
+                out.writeTo(fos);
+            }
+
+            JOptionPane.showMessageDialog(this, "File saved to %s".formatted(outputPath), "", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SshApiException | IOException e) {
+            ExceptionDialog.show(this, e);
+        }
     }
 
     private void installXrplBinary() {
@@ -75,6 +288,7 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
             var installer = createInstaller((XrplBinary) cbo.getSelectedItem());
             lblInstaller.setText("Install using %s".formatted(installer.displayName()));
             try {
+                setEnabled(false);
                 installer.install();
 
                 xrplService.restart(false);
@@ -82,6 +296,7 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
             } catch (SshApiException e) {
                 outputError("Installing xrpl binary failed. " + e.getMessage());
             } finally {
+                setEnabled(true);
                 installer.removeActionLogListener(this);
             }
 
@@ -148,15 +363,23 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
             }
 
             try {
+                setEnabled(false);
                 xrplService.stop();
                 installer.install((XrplBinaryPackage) cboPackages.getSelectedItem());
                 xrplService.restart();
                 outputInfo("xrpl binary successfully updated");
             } catch (SshApiException e) {
                 outputError("Updating xrpl binary failed. " + e.getMessage());
+            } finally {
+                setEnabled(true);
             }
-            statusView.refresh();
+            refreshViews();
         });
+    }
+
+    private void refreshViews() {
+        statusView.refresh();
+        refreshView();
     }
 
     private void updateAvailableUpdatePackages(JComboBox cboChannels, JComboBox<XrplBinaryPackage> cboPackages, ReleaseChannel channel) {
@@ -178,7 +401,7 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
         Utils.runAsync(() -> {
             try {
                 xrplService.restart(true);
-                statusView.refresh();
+                refreshViews();
             } catch (SshApiException e) {
                 outputError(e.getMessage());
             }
@@ -189,7 +412,7 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
         Utils.runAsync(() -> {
             try {
                 xrplService.stop();
-                statusView.refresh();
+                refreshViews();
             } catch (SshApiException e) {
                 outputError(e.getMessage());
             }
@@ -200,7 +423,7 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
         Utils.runAsync(() -> {
             try {
                 xrplService.start();
-                statusView.refresh();
+                refreshViews();
             } catch (SshApiException e) {
                 outputError(e.getMessage());
             }
@@ -208,28 +431,26 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
     }
 
     private void deleteServiceDb() {
-        int result = JOptionPane.showConfirmDialog(parent, "Do you really want to stop the service and remove its database? This step cannot be undone.\n\nDo you want to proceed?", "Remove database?", JOptionPane.YES_NO_CANCEL_OPTION);
-        if (result != JOptionPane.YES_OPTION) {
-            return;
-        }
-
         try {
+            int result = JOptionPane.showConfirmDialog(parent, "Do you really want to stop the service and remove its database at %s? This step cannot be undone.\n\nDo you want to proceed?".formatted(xrplBinary.remotePaths().databasePath().orElse("")), "Remove database?", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (result != JOptionPane.YES_OPTION) {
+                return;
+            }
             xrplService.stop();
             xrplBinary.deleteDatabase();
             xrplService.start();
         } catch (SshApiException e) {
             outputError(e.getMessage());
         }
-        statusView.refresh();
+        refreshViews();
     }
 
     private void deleteDebugLog() {
-        int result = JOptionPane.showConfirmDialog(parent, "Do you really want to remove the xrpl service log file? This step cannot be undone.\n\nDo you want to proceed?", "Remove log?", JOptionPane.YES_NO_CANCEL_OPTION);
-        if (result != JOptionPane.YES_OPTION) {
-            return;
-        }
-
         try {
+            int result = JOptionPane.showConfirmDialog(parent, "Do you really want to remove the xrpl service log file %s? This step cannot be undone.\n\nDo you want to proceed?".formatted(xrplBinary.remotePaths().debugLogPath()), "Remove log?", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (result != JOptionPane.YES_OPTION) {
+                return;
+            }
             xrplBinary.deleteDebugLog();
         } catch (SshApiException e) {
             outputError(e.getMessage());
@@ -254,6 +475,8 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
             xrplInstalled = xrplBinary.installed();
             cmdInstall.setEnabled(!xrplInstalled);
             cmdUpdate.setEnabled(xrplInstalled);
+            cmdStop.setEnabled(xrplInstalled);
+            cmdStart.setEnabled(xrplInstalled);
             cmdRestart.setEnabled(xrplInstalled);
             cmdDeleteServiceDb.setEnabled(xrplInstalled);
             cmdDeleteDebugLog.setEnabled(xrplInstalled);
@@ -268,8 +491,14 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
 
         cmdInstall.setEnabled(enabled && !xrplInstalled);
         cmdUpdate.setEnabled(enabled && xrplInstalled);
+        cmdStop.setEnabled(enabled && xrplInstalled);
+        cmdStart.setEnabled(enabled && xrplInstalled);
         cmdRestart.setEnabled(enabled && xrplInstalled);
-        cmdDeleteServiceDb.setEnabled(enabled && xrplInstalled);
+        try {
+            cmdDeleteServiceDb.setEnabled(enabled && xrplInstalled && xrplBinary.remotePaths().databasePath().isPresent());
+        } catch (SshApiException e) {
+            ExceptionDialog.show(this, e);
+        }
         cmdDeleteDebugLog.setEnabled(enabled && xrplInstalled);
     }
 
@@ -289,6 +518,55 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
         sb.append("Actual: %s".formatted(event.actualFingerprint() == null ? "<none>" : event.actualFingerprint()));
         var ret = JOptionPane.showConfirmDialog(parent, sb, "Invalid / unknown signature", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         event.accept(ret == JOptionPane.YES_OPTION);
+    }
+
+    @Override
+    public void onCompleted() {
+        setEnabled(true);
+    }
+
+    @Override
+    protected void refresh() {
+        xrplBinaryRefresh();
+        refreshView();
+    }
+
+    private void refreshView() {
+        try {
+            if (xrplBinary.type() == XrplType.Xahau) {
+                lblIcon.setIcon(new FlatSVGIcon("img/xahau.svg", 120, 120));
+            } else {
+                lblIcon.setIcon(new FlatSVGIcon("img/xrpledger.svg", 120, 91));
+            }
+
+            final var df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            lblRunningSince.setText(df.format(systemMonitor.serverStartingTime()));
+
+            if (!xrplBinary.installed()) {
+                lblXrplState.setText("");
+                return;
+            }
+
+            var xrplRamUsed = systemMonitor.memoryUsed(xrplBinary.processName());
+            var running = xrplRamUsed != null;
+            lblXrplState.setText(running ? "running" : "stopped");
+
+            var server = xrplBinary.config().server();
+            var data = new LinkedHashMap<String, String>();
+            for (var s : server.all()) {
+                data.put(s.name(), "%s (%s)".formatted(s.protocol(), s.port()));
+            }
+            createServerFeatures(data);
+
+            var remotePath = xrplBinary.remotePaths();
+            lblInstallPath.setText(remotePath.installPath());
+            lblConfigPath.setText(remotePath.configPath());
+            lblLogPath.setText(remotePath.debugLogPath());
+            lblDatabasePath.setText(remotePath.databasePath().orElse("undefined"));
+            lblValidators.setText(remotePath.validatorPath().orElse("undefined"));
+        } catch (SshApiException e) {
+            ExceptionDialog.show(this, e);
+        }
     }
 
     public void addServerStatusListener(ServerStatusListener l) {

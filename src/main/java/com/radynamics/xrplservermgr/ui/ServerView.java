@@ -216,7 +216,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
         ContentView view;
         switch (item) {
             case ServerStatus -> {
-                var v = new ServerStatus(parent);
+                var v = new ServerStatus(parent, conn);
                 v.addServerStatusListener(() -> {
                     close();
                     try {
