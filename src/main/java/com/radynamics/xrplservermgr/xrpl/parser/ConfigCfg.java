@@ -80,6 +80,14 @@ public class ConfigCfg {
         if (port != null) {
             s.port(port.getValue());
         }
+        var ip = readPair(sections.get(0).lines(), "ip");
+        if (ip != null) {
+            s.ip(ip.getValue());
+        }
+        var admin = readPair(sections.get(0).lines(), "admin");
+        if (admin != null) {
+            s.admin(admin.getValue());
+        }
         var protocol = readPair(sections.get(0).lines(), "protocol");
         if (protocol != null) {
             s.protocol(protocol.getValue());
