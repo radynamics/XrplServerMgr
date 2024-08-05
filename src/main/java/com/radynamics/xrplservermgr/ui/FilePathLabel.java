@@ -38,7 +38,7 @@ public class FilePathLabel extends JPanel {
         return lbl.getText();
     }
 
-    public void addRemoteFilePathLabelListener(FilePathLabelListener l) {
+    public void addFilePathLabelListener(FilePathLabelListener l) {
         listener.add(l);
     }
 

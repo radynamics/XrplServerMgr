@@ -199,9 +199,9 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
             }
         }
 
-        lblConfigPath.addRemoteFilePathLabelListener(() -> saveRemoteFileLocally(lblConfigPath.getText()));
-        lblLogPath.addRemoteFilePathLabelListener(() -> saveRemoteFileLocally(lblLogPath.getText()));
-        lblValidators.addRemoteFilePathLabelListener(() -> saveRemoteFileLocally(lblValidators.getText()));
+        lblConfigPath.addFilePathLabelListener(() -> saveRemoteFileLocally(lblConfigPath.getText()));
+        lblLogPath.addFilePathLabelListener(() -> saveRemoteFileLocally(lblLogPath.getText()));
+        lblValidators.addFilePathLabelListener(() -> saveRemoteFileLocally(lblValidators.getText()));
     }
 
     private void createServerFeatures(LinkedHashMap<String, String> data) {
