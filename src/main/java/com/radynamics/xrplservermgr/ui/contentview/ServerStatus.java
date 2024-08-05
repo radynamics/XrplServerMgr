@@ -34,10 +34,10 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
     private final JPanel pnlServerFeatures = new JPanel();
     private final SpringLayout serverFeaturesSpringLayout = new SpringLayout();
     private final JTextField lblInstallPath = Utils.formatAsLabel(new JTextField());
-    private final RemoteFilePathLabel lblConfigPath = new RemoteFilePathLabel();
-    private final RemoteFilePathLabel lblLogPath = new RemoteFilePathLabel();
+    private final FilePathLabel lblConfigPath = new FilePathLabel();
+    private final FilePathLabel lblLogPath = new FilePathLabel();
     private final JTextField lblDatabasePath = Utils.formatAsLabel(new JTextField());
-    private final RemoteFilePathLabel lblValidators = new RemoteFilePathLabel();
+    private final FilePathLabel lblValidators = new FilePathLabel();
 
     public ServerStatus(JFrame parent, ConnectionInfo conn) {
         super(parent);

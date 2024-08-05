@@ -7,16 +7,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class RemoteFilePathLabel extends JPanel {
+public class FilePathLabel extends JPanel {
     private final JTextField lbl = Utils.formatAsLabel(new JTextField());
 
     private final ArrayList<RemoteFilePathLabelListener> listener = new ArrayList<>();
 
-    public RemoteFilePathLabel() {
+    public FilePathLabel() {
         this("");
     }
 
-    public RemoteFilePathLabel(String text) {
+    public FilePathLabel(String text) {
         setLayout(new BorderLayout());
 
         add(lbl, BorderLayout.CENTER);
