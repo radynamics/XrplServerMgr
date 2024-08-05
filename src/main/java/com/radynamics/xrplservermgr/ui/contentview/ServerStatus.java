@@ -34,10 +34,10 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
     private final JPanel pnlServerFeatures = new JPanel();
     private final SpringLayout serverFeaturesSpringLayout = new SpringLayout();
     private final JTextField lblInstallPath = Utils.formatAsLabel(new JTextField());
-    private final FilePathLabel lblConfigPath = new FilePathLabel();
-    private final FilePathLabel lblLogPath = new FilePathLabel();
+    private final FilePathLabel lblConfigPath;
+    private final FilePathLabel lblLogPath;
     private final JTextField lblDatabasePath = Utils.formatAsLabel(new JTextField());
-    private final FilePathLabel lblValidators = new FilePathLabel();
+    private final FilePathLabel lblValidators;
 
     public ServerStatus(JFrame parent, ConnectionInfo conn) {
         super(parent);
@@ -128,6 +128,12 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
                     sl.putConstraint(SpringLayout.WEST, lbl, 0, SpringLayout.WEST, pnlDirectories);
                     sl.putConstraint(SpringLayout.NORTH, lbl, 0, SpringLayout.NORTH, pnlDirectories);
                 }
+
+                var icon = new FlatSVGIcon("img/save.svg", 16, 16);
+                icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> Color.lightGray));
+                lblConfigPath = new FilePathLabel(icon);
+                lblLogPath = new FilePathLabel(icon);
+                lblValidators = new FilePathLabel(icon);
 
                 var data = new LinkedHashMap<String, Component>();
                 data.put("Installation", lblInstallPath);

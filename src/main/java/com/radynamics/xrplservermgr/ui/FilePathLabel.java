@@ -11,16 +11,11 @@ public class FilePathLabel extends JPanel {
     private final JTextField lbl = Utils.formatAsLabel(new JTextField());
 
     private final ArrayList<RemoteFilePathLabelListener> listener = new ArrayList<>();
-
-    public FilePathLabel() {
-        this("");
-    }
-
-    public FilePathLabel(String text) {
+    public FilePathLabel(FlatSVGIcon icon) {
         setLayout(new BorderLayout());
 
         add(lbl, BorderLayout.CENTER);
-        lbl.setText(text);
+        lbl.setText("");
         lbl.setBackground(null);
         lbl.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
@@ -28,8 +23,6 @@ public class FilePathLabel extends JPanel {
         add(cmd, BorderLayout.EAST);
         cmd.setBackground(null);
         cmd.setButtonType(FlatButton.ButtonType.toolBarButton);
-        var icon = new FlatSVGIcon("img/save.svg", 16, 16);
-        icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> Color.lightGray));
         cmd.setIcon(icon);
         cmd.setPreferredSize(new Dimension(21, 21));
         cmd.setBorderPainted(false);
