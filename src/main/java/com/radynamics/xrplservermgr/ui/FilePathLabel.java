@@ -11,6 +11,7 @@ public class FilePathLabel extends JPanel {
     private final JTextField lbl = Utils.formatAsLabel(new JTextField());
 
     private final ArrayList<FilePathLabelListener> listener = new ArrayList<>();
+
     public FilePathLabel(FlatSVGIcon icon) {
         setLayout(new BorderLayout());
 
@@ -26,7 +27,7 @@ public class FilePathLabel extends JPanel {
         cmd.setIcon(icon);
         cmd.setPreferredSize(new Dimension(21, 21));
         cmd.setBorderPainted(false);
-        cmd.addActionListener(e -> raiseSaveClicked());
+        cmd.addActionListener(e -> raiseButtonClicked());
     }
 
     public void setText(String text) {
@@ -41,9 +42,9 @@ public class FilePathLabel extends JPanel {
         listener.add(l);
     }
 
-    private void raiseSaveClicked() {
+    private void raiseButtonClicked() {
         for (var l : listener) {
-            l.onSaveClicked();
+            l.onButtonClicked();
         }
     }
 }
