@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class FilePathLabel extends JPanel {
     private final JTextField lbl = Utils.formatAsLabel(new JTextField());
 
-    private final ArrayList<RemoteFilePathLabelListener> listener = new ArrayList<>();
+    private final ArrayList<FilePathLabelListener> listener = new ArrayList<>();
     public FilePathLabel(FlatSVGIcon icon) {
         setLayout(new BorderLayout());
 
@@ -37,7 +37,7 @@ public class FilePathLabel extends JPanel {
         return lbl.getText();
     }
 
-    public void addRemoteFilePathLabelListener(RemoteFilePathLabelListener l) {
+    public void addRemoteFilePathLabelListener(FilePathLabelListener l) {
         listener.add(l);
     }
 

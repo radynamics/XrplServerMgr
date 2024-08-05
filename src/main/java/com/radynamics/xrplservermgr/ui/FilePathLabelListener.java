@@ -1,5 +1,5 @@
 package com.radynamics.xrplservermgr.ui;
 
-public interface RemoteFilePathLabelListener {
+public interface FilePathLabelListener {
     void onSaveClicked();
 }
