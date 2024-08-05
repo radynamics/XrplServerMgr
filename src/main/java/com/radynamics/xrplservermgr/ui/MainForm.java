@@ -48,6 +48,17 @@ public class MainForm extends JFrame {
             serverPanel.setBorder(mainContentBorder);
             serverPanel.addServerPanelListener(this::onServerConnect);
             tabbedPane.addTab("", new FlatSVGIcon("img/home.svg", 16, 16), serverPanel);
+
+            var toolBar = new JToolBar();
+            toolBar.setFloatable(false);
+            toolBar.setBorder(null);
+            toolBar.add(Box.createHorizontalGlue());
+            {
+                var cmd = new JButton(new FlatSVGIcon("img/info.svg", 16, 16));
+                toolBar.add(cmd);
+                cmd.addActionListener(e -> onShowInfoClick());
+            }
+            tabbedPane.putClientProperty(FlatClientProperties.TABBED_PANE_TRAILING_COMPONENT, toolBar);
         }
 
         setDropTarget(new DropTarget() {
@@ -81,6 +92,10 @@ public class MainForm extends JFrame {
         var v = new LogViewerView(this, new FileProvider(file.getAbsolutePath()));
         addAndShowTab(file.getName(), v);
         v.reload();
+    }
+
+    private void onShowInfoClick() {
+        addAndShowTab("About", new AboutView());
     }
 
     private void addAndShowTab(String title, JPanel view) {

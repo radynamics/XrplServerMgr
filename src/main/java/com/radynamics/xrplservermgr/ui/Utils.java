@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 
@@ -29,6 +30,14 @@ public final class Utils {
 
     public static JLabel createLinkLabel(JComponent owner, String text, boolean enabled) {
         return createLinkLabel(owner, text, enabled, null);
+    }
+
+    public static JLabel createLinkLabel(JComponent owner, Path path) {
+        return createLinkLabel(owner, path.toString(), true, path.toFile().toURI());
+    }
+
+    public static JLabel createLinkLabel(JComponent owner, URI uri) {
+        return createLinkLabel(owner, uri.toString(), true, uri);
     }
 
     public static JLabel createLinkLabel(JComponent owner, String text, boolean enabled, URI uri) {

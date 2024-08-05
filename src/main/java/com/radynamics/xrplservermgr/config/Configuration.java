@@ -16,7 +16,7 @@ public class Configuration {
         return Paths.get(home, ".xrplServerMgr");
     }
 
-    private static Path backup() {
+    public static Path backup() {
         return Paths.get(root().toString(), "backup");
     }
 
