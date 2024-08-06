@@ -35,6 +35,13 @@ public class AboutView extends JPanel implements TabPage {
         add(pnl);
 
         pnl.add(new DescriptionButton()
+                .buttonText("Check for Updates")
+                .title("%s Updates".formatted(MainForm.appTitle))
+                .description("Check for new updates online.")
+                .icon(new FlatSVGIcon("img/online_update.svg", 32, 32))
+                .click(e -> checkUpdates()));
+
+        pnl.add(new DescriptionButton()
                 .buttonText("Licenses")
                 .title("Infos about %s".formatted(MainForm.appTitle))
                 .description("Show more information about used libraries and licences.")
@@ -73,6 +80,10 @@ public class AboutView extends JPanel implements TabPage {
         txt.setWrapStyleWord(true);
         txt.setSize(txt.getPreferredSize().width, txt.getPreferredSize().height);
         JOptionPane.showMessageDialog(this, new JScrollPane(txt), "Used libraries", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void checkUpdates() {
+        Utils.openBrowser(this, URI.create("https://github.com/radynamics/XrplServerMgr/releases"));
     }
 
     private static Component createLabelAndValue(String caption, String value) {

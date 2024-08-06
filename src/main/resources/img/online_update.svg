@@ -1,0 +1,13 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<svg viewBox="-2 -4 32 32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="Layer_1" transform="translate(-2, -4)" style="enable-background:new 0 0 32 32">
+    <g id="DesktopWindows">
+      <path d="M28, 4L4, 4C2.9, 4 2, 4.9 2, 6L2, 20C2, 21.1 2.9, 22 4, 22L12, 22L12, 26L8, 26L8, 28L24, 28L24, 26L20, 26L20, 22L28, 22C29.1, 22 30, 21.1 30, 20L30, 6C30, 4.9 29.1, 4 28, 4zM28, 20L4, 20L4, 6L28, 6L28, 20z" fill="#727272" class="Black" />
+    </g>
+  </g>
+  <g id="Layer_1" transform="translate(14, 12)" style="enable-background:new 0 0 16 16">
+    <g id="Arrow1Down">
+      <polygon points="6,0 10,0 10,8 16,8 8,16 0,8 6,8  " fill="#1177D7" class="Blue" />
+    </g>
+  </g>
+</svg>
