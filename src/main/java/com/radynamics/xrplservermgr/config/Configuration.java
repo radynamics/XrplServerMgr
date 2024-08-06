@@ -20,6 +20,10 @@ public class Configuration {
         return Paths.get(root().toString(), "backup");
     }
 
+    public static Path logs() {
+        return Paths.get(new File("").getAbsoluteFile().toPath().toString(), "logs");
+    }
+
     public static File createNewRippleCfgBackupFile(String host) throws IOException {
         return createNewBackupFile("%s_rippled".formatted(host), ".cfg");
     }

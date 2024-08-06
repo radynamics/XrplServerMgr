@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.File;
 import java.net.URI;
 
 public class AboutView extends JPanel implements TabPage {
@@ -28,7 +27,7 @@ public class AboutView extends JPanel implements TabPage {
         add(createLabelAndValue("Version:", vc.getVersion()));
         add(createLabelAndValue("Website:", Utils.createLinkLabel(this, URI.create("https://github.com/radynamics/XrplServerMgr"))));
         add(createLabelAndValue("Backups:", Utils.createLinkLabel(this, Configuration.backup())));
-        add(createLabelAndValue("Error logs:", Utils.createLinkLabel(this, new File("").getAbsoluteFile().toPath())));
+        add(createLabelAndValue("Error logs:", Utils.createLinkLabel(this, Configuration.logs())));
         add(Box.createVerticalStrut(20));
 
         var pnl = new JPanel();
