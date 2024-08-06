@@ -47,7 +47,7 @@ public class DescriptionButton extends JPanel {
     }
 
     public DescriptionButton buttonText(String text) {
-        lblButtonText.setText("<html>%s</html>".formatted(text));
+        lblButtonText.setText("<html><center>%s</center></html>".formatted(text));
         return this;
     }
 
