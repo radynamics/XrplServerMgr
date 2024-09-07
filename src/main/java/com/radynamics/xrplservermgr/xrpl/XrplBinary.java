@@ -61,6 +61,8 @@ public interface XrplBinary {
 
     String serverLog(ProgressListener l) throws SshApiException;
 
+    String serverLogRecent(int count) throws SshApiException;
+
     void deleteDatabase() throws SshApiException;
 
     void deleteDebugLog() throws SshApiException;

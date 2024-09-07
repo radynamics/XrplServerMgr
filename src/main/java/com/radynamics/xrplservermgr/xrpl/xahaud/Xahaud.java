@@ -36,6 +36,11 @@ public class Xahaud implements XrplBinary {
     }
 
     @Override
+    public String serverLogRecent(int count) throws SshApiException {
+        return rippled.serverLogRecent(count);
+    }
+
+    @Override
     public void deleteDatabase() throws SshApiException {
         rippled.deleteDatabase();
     }

@@ -109,6 +109,12 @@ public class Rippled implements XrplBinary {
     }
 
     @Override
+    public String serverLogRecent(int count) throws SshApiException {
+        var result = session.execute("tail -n %s %s".formatted(count, serverLogRemotePath()));
+        return result.asString();
+    }
+
+    @Override
     public void deleteDatabase() throws SshApiException {
         if (serverDatabasePath == null) {
             throw new SshApiException("Cannot delete database due path on server is unknown.");

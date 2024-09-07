@@ -38,6 +38,11 @@ public class FileProvider implements LogProvider {
         return sb.toString();
     }
 
+    @Override
+    public LogStreamProvider createStreamingProvider() {
+        return null;
+    }
+
     private void raiseOnCompleted() {
         for (var l : listener) {
             l.onCompleted();

@@ -10,6 +10,7 @@ import net.coderazzi.filters.gui.TableFilterHeader;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
@@ -21,11 +22,13 @@ import java.util.stream.Collectors;
 
 public class LogViewerView extends JPanel implements TabPage {
     private final Window owner;
+    private final JCheckBox chkStreamLogs;
     private final ProgressBarDialog progressBarDialog;
     private LogProvider provider;
     private final JButton _cmdRefresh;
     private final LogEventTableModel model;
     private String datasource = "";
+    private LogStreamProvider streamingProvider;
 
     public LogViewerView(JFrame owner, LogProvider provider) {
         this.owner = owner;
@@ -54,6 +57,12 @@ public class LogViewerView extends JPanel implements TabPage {
             toolbar.add(_cmdRefresh);
             _cmdRefresh.setIcon(new FlatSVGIcon("img/refresh.svg"));
             _cmdRefresh.addActionListener(e -> refresh());
+        }
+        {
+            chkStreamLogs = new JCheckBox("stream logs");
+            toolbar.add(chkStreamLogs);
+            chkStreamLogs.setEnabled(provider.createStreamingProvider() != null);
+            chkStreamLogs.addItemListener(this::streamLogsChanged);
         }
 
         model = new LogEventTableModel();
@@ -84,7 +93,36 @@ public class LogViewerView extends JPanel implements TabPage {
     }
 
     private void refresh() {
+        var streaming = streamingProvider != null;
+        // Prevent new streaming result directly override/hide reloaded data.
+        if (streaming) {
+            stopStreaming();
+        }
         reload();
+        if (streaming) {
+            startStreaming();
+        }
+    }
+
+    private void streamLogsChanged(ItemEvent e) {
+        if (chkStreamLogs.isSelected()) {
+            streamingProvider = provider.createStreamingProvider();
+            streamingProvider.addChangedListener(this::load);
+            streamingProvider.start();
+        } else {
+            if (streamingProvider != null) {
+                streamingProvider.stop();
+                streamingProvider = null;
+            }
+        }
+    }
+
+    public void startStreaming() {
+        chkStreamLogs.setSelected(true);
+    }
+
+    public void stopStreaming() {
+        chkStreamLogs.setSelected(false);
     }
 
     private void show(String value) {
@@ -104,6 +142,7 @@ public class LogViewerView extends JPanel implements TabPage {
             return;
         }
 
+        stopStreaming();
         provider = new FileProvider(fc.getSelectedFile().getAbsolutePath());
         reload();
     }

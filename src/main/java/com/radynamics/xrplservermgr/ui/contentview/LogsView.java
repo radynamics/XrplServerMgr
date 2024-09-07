@@ -15,7 +15,11 @@ public class LogsView extends ContentView {
 
         _view = new LogViewerView(parent, provider);
         add(_view);
-        _view.reload();
+        if (provider.createStreamingProvider() == null) {
+            _view.reload();
+        } else {
+            _view.startStreaming();
+        }
     }
 
     @Override

@@ -36,6 +36,13 @@ public class RippledProvider implements LogProvider {
         }
     }
 
+    @Override
+    public LogStreamProvider createStreamingProvider() {
+        var p = new RippledStreamProvider(xrplBinary);
+        p.raw(raw);
+        return p;
+    }
+
     private void raiseOnProgress(int current, int total) {
         for (var l : listener) {
             l.onProgress(current, total);
