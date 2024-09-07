@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class FilePathLabel extends JPanel {
     private final JTextField lbl = Utils.formatAsLabel(new JTextField());
+    private final FlatButton cmd;
 
     private final ArrayList<FilePathLabelListener> listener = new ArrayList<>();
 
@@ -20,7 +21,7 @@ public class FilePathLabel extends JPanel {
         lbl.setBackground(null);
         lbl.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
-        var cmd = new FlatButton();
+        cmd = new FlatButton();
         add(cmd, BorderLayout.EAST);
         cmd.setBackground(null);
         cmd.setButtonType(FlatButton.ButtonType.toolBarButton);
@@ -40,6 +41,10 @@ public class FilePathLabel extends JPanel {
 
     public void addFilePathLabelListener(FilePathLabelListener l) {
         listener.add(l);
+    }
+
+    public void setEnabled(boolean enabled) {
+        cmd.setEnabled(enabled);
     }
 
     private void raiseButtonClicked() {

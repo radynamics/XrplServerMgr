@@ -506,6 +506,10 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
             ExceptionDialog.show(this, e);
         }
         cmdDeleteDebugLog.setEnabled(enabled && xrplInstalled);
+
+        lblConfigPath.setEnabled(enabled && xrplInstalled);
+        lblLogPath.setEnabled(enabled && xrplInstalled);
+        lblValidators.setEnabled(enabled && xrplInstalled);
     }
 
     @Override
