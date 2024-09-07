@@ -1,6 +1,7 @@
 package com.radynamics.xrplservermgr.ui.logview;
 
 import com.radynamics.xrplservermgr.ui.FormAcceptCloseHandler;
+import com.radynamics.xrplservermgr.ui.MainForm;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +14,7 @@ public class LogViewerForm extends JDialog {
 
     private final FormAcceptCloseHandler formAcceptCloseHandler = new FormAcceptCloseHandler(this);
 
-    public LogViewerForm(JFrame owner, LogProvider provider) {
+    public LogViewerForm(MainForm owner, LogProvider provider) {
         super(owner, "Log Viewer");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);

@@ -24,7 +24,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
     private final ContentContainer contentContainer;
 
     private final ConnectionInfo conn;
-    private final JFrame parent;
+    private final MainForm parent;
     private final MenuView menuView;
     private final StatusView statusView;
     private SshSession session;
@@ -35,7 +35,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
     private SystemMonitor systemMonitorWithoutActionListener;
     private char[] sudoPassword;
 
-    public ServerView(JFrame parent, ConnectionInfo conn) {
+    public ServerView(MainForm parent, ConnectionInfo conn) {
         this.parent = parent;
         this.conn = conn;
 

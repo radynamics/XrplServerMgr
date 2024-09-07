@@ -1,5 +1,6 @@
 package com.radynamics.xrplservermgr.ui.contentview;
 
+import com.radynamics.xrplservermgr.ui.MainForm;
 import com.radynamics.xrplservermgr.ui.logview.LogProvider;
 import com.radynamics.xrplservermgr.ui.logview.LogViewerView;
 
@@ -8,7 +9,7 @@ import javax.swing.*;
 public class LogsView extends ContentView {
     private final LogViewerView _view;
 
-    public LogsView(JFrame parent, LogProvider provider) {
+    public LogsView(MainForm parent, LogProvider provider) {
         super(parent);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

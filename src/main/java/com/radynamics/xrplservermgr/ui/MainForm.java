@@ -89,6 +89,10 @@ public class MainForm extends JFrame {
     }
 
     private void onFileDropped(File file) {
+        openLogViewer(file);
+    }
+
+    public void openLogViewer(File file) {
         var v = new LogViewerView(this, new FileProvider(file.getAbsolutePath()));
         addAndShowTab(file.getName(), v);
         v.reload();

@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class LogViewerView extends JPanel implements TabPage {
-    private final JFrame owner;
+    private final MainForm owner;
     private final JCheckBox chkStreamLogs;
     private ProgressBarDialog progressBarDialog;
     private LogProvider provider;
@@ -30,7 +30,7 @@ public class LogViewerView extends JPanel implements TabPage {
     private String datasource = "";
     private LogStreamProvider streamingProvider;
 
-    public LogViewerView(JFrame owner, LogProvider provider) {
+    public LogViewerView(MainForm owner, LogProvider provider) {
         this.owner = owner;
         this.provider = provider;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -146,10 +146,7 @@ public class LogViewerView extends JPanel implements TabPage {
             return;
         }
 
-        stopStreaming();
-        provider = new FileProvider(fc.getSelectedFile().getAbsolutePath());
-        refreshEnabled();
-        reload();
+        owner.openLogViewer(fc.getSelectedFile());
     }
 
     private static JFileChooser createFileChooser() {
