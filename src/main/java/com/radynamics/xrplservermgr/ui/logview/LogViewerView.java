@@ -21,9 +21,9 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class LogViewerView extends JPanel implements TabPage {
-    private final Window owner;
+    private final JFrame owner;
     private final JCheckBox chkStreamLogs;
-    private final ProgressBarDialog progressBarDialog;
+    private ProgressBarDialog progressBarDialog;
     private LogProvider provider;
     private final JButton _cmdRefresh;
     private final LogEventTableModel model;
@@ -33,8 +33,6 @@ public class LogViewerView extends JPanel implements TabPage {
     public LogViewerView(JFrame owner, LogProvider provider) {
         this.owner = owner;
         this.provider = provider;
-        progressBarDialog = ProgressBarDialog.create(owner);
-        provider.addProgressListener(progressBarDialog);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         var toolbar = new JToolBar();
@@ -175,6 +173,13 @@ public class LogViewerView extends JPanel implements TabPage {
     public void reload() {
         final var instance = this;
         try (final var ignored = new WaitCursor(owner)) {
+            if (progressBarDialog != null) {
+                progressBarDialog.setVisible(false);
+                progressBarDialog = null;
+            }
+            progressBarDialog = ProgressBarDialog.create(owner);
+            provider.addProgressListener(progressBarDialog);
+
             var t = new Thread(() -> load(provider.raw()));
             t.setUncaughtExceptionHandler((t1, e) -> {
                 javax.swing.SwingUtilities.invokeLater(() -> {
