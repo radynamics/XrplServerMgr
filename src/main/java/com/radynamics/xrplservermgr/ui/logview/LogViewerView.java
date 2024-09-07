@@ -55,6 +55,7 @@ public class LogViewerView extends JPanel implements TabPage {
         {
             _cmdRefresh = new JButton("refresh");
             toolbar.add(_cmdRefresh);
+            _cmdRefresh.setEnabled(provider.createStreamingProvider() != null);
             _cmdRefresh.setIcon(new FlatSVGIcon("img/refresh.svg"));
             _cmdRefresh.addActionListener(e -> refresh());
         }
