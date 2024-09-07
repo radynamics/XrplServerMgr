@@ -53,16 +53,15 @@ public class LogViewerView extends JPanel implements TabPage {
         {
             _cmdRefresh = new JButton("refresh");
             toolbar.add(_cmdRefresh);
-            _cmdRefresh.setEnabled(provider.createStreamingProvider() != null);
             _cmdRefresh.setIcon(new FlatSVGIcon("img/refresh.svg"));
             _cmdRefresh.addActionListener(e -> refresh());
         }
         {
             chkStreamLogs = new JCheckBox("stream logs");
             toolbar.add(chkStreamLogs);
-            chkStreamLogs.setEnabled(provider.createStreamingProvider() != null);
             chkStreamLogs.addItemListener(this::streamLogsChanged);
         }
+        refreshEnabled();
 
         model = new LogEventTableModel();
         var table = new JTable(model);
@@ -89,6 +88,12 @@ public class LogViewerView extends JPanel implements TabPage {
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         add(sp);
         sp.setAlignmentX(Component.LEFT_ALIGNMENT);
+    }
+
+    private void refreshEnabled() {
+        var streamingProvider = provider.createStreamingProvider();
+        _cmdRefresh.setEnabled(streamingProvider != null);
+        chkStreamLogs.setEnabled(streamingProvider != null);
     }
 
     private void refresh() {
@@ -143,6 +148,7 @@ public class LogViewerView extends JPanel implements TabPage {
 
         stopStreaming();
         provider = new FileProvider(fc.getSelectedFile().getAbsolutePath());
+        refreshEnabled();
         reload();
     }
 
