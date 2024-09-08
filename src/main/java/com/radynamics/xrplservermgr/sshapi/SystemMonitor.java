@@ -135,7 +135,7 @@ public class SystemMonitor {
     }
 
     private boolean running(String processName) throws SshApiException {
-        return memoryUsed(processName) == null;
+        return memoryUsed(processName) != null;
     }
 
     public String systemCodename() throws SshApiException {
