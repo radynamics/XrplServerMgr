@@ -7,6 +7,8 @@ import com.radynamics.xrplservermgr.xrpl.rippled.CommandUserInput;
 import com.radynamics.xrplservermgr.xrpl.rippled.RippledCommandException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 public class XrplCommandExecutor {
     private final SshSession session;
     private final String binaryPath;
@@ -20,7 +22,7 @@ public class XrplCommandExecutor {
 
     public JsonObject execute(String command) throws SshApiException, RippledCommandException {
         var cmd = CommandUserInput.parse(command);
-        if (cmd.hasArguments()) {
+        if (cmd.hasArguments() && needsApostrophe(cmd.command())) {
             return execute(cmd.command(), cmd.arguments());
         } else {
             return executeValidateResponse("%s --silent".formatted(command));
@@ -58,5 +60,10 @@ public class XrplCommandExecutor {
             throw new RippledCommandException("Command failed. %s".formatted(result.get("error_message").getAsString()), json);
         }
         return result;
+    }
+
+    private boolean needsApostrophe(String command) {
+        var noNeed = List.of("feature");
+        return !noNeed.contains(command);
     }
 }

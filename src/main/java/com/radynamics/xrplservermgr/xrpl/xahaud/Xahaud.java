@@ -5,6 +5,7 @@ import com.radynamics.xrplservermgr.xrpl.*;
 import com.radynamics.xrplservermgr.xrpl.parser.*;
 import com.radynamics.xrplservermgr.xrpl.rippled.Rippled;
 import com.radynamics.xrplservermgr.xrpl.rippled.RippledCommandException;
+import com.radynamics.xrplservermgr.xrpl.rippled.Vote;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -146,6 +147,11 @@ public class Xahaud implements XrplBinary {
     @Override
     public void refreshFeatures() throws SshApiException, RippledCommandException {
         rippled.refreshFeatures();
+    }
+
+    @Override
+    public void vote(Feature feature, Vote vote) throws RippledCommandException, SshApiException {
+        rippled.vote(feature, vote);
     }
 
     @Override

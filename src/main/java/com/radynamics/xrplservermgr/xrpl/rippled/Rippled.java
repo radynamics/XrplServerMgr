@@ -6,6 +6,7 @@ import com.radynamics.xrplservermgr.xrpl.parser.*;
 import com.radynamics.xrplservermgr.xrpl.rippled.portablebuild.PortableBuildInstaller;
 import com.radynamics.xrplservermgr.xrpl.rippled.ripplebinaries.RippleBinaryInstaller;
 import com.radynamics.xrplservermgr.xrpl.xahaud.XahaudInstaller;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -163,6 +164,12 @@ public class Rippled implements XrplBinary {
         return features;
     }
 
+    public void vote(Feature feature, Vote vote) throws RippledCommandException, SshApiException {
+        assertHasHashOrName(feature);
+        if (vote == null) throw new RippledCommandException("A specific vote must be set. null is not supported.");
+        createCommandExecutor().execute("feature %s %s".formatted(feature.hashOrName(), vote.asString()));
+    }
+
     @Override
     public void refreshPeers() throws SshApiException, RippledCommandException {
         var json = createCommandExecutor().execute("peers");
@@ -172,6 +179,12 @@ public class Rippled implements XrplBinary {
     @Override
     public Peers peers() {
         return peers;
+    }
+
+    private static void assertHasHashOrName(Feature feature) throws RippledCommandException {
+        if (StringUtils.isEmpty(feature.hashOrName())) {
+            throw new RippledCommandException("Feature must have hash or name.");
+        }
     }
 
     @Override

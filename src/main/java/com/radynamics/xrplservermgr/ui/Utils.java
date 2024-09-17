@@ -114,6 +114,10 @@ public final class Utils {
         return lbl;
     }
 
+    public static String toHex(Color c) {
+        return String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue());
+    }
+
     public static void openBrowser(Component parent, URI uri) {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {

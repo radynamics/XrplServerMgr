@@ -5,6 +5,7 @@ import com.radynamics.xrplservermgr.sshapi.ProgressListener;
 import com.radynamics.xrplservermgr.sshapi.SshApiException;
 import com.radynamics.xrplservermgr.xrpl.parser.*;
 import com.radynamics.xrplservermgr.xrpl.rippled.RippledCommandException;
+import com.radynamics.xrplservermgr.xrpl.rippled.Vote;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -46,6 +47,8 @@ public interface XrplBinary {
     List<Amendment> knownAmendments();
 
     void refreshFeatures() throws SshApiException, RippledCommandException;
+
+    void vote(Feature feature, Vote vote) throws RippledCommandException, SshApiException;
 
     void refreshPeers() throws SshApiException, RippledCommandException;
 

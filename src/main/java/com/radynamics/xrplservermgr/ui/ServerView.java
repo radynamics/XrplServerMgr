@@ -2,6 +2,7 @@ package com.radynamics.xrplservermgr.ui;
 
 import com.jcraft.jsch.JSchException;
 import com.radynamics.xrplservermgr.sshapi.*;
+import com.radynamics.xrplservermgr.ui.contentview.AmendmentsView;
 import com.radynamics.xrplservermgr.ui.contentview.MenuItem;
 import com.radynamics.xrplservermgr.ui.contentview.*;
 import com.radynamics.xrplservermgr.ui.logview.RippledProvider;
@@ -227,7 +228,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
                 });
                 view = v;
             }
-            case Amendments -> view = new AmendmentsView(parent);
+            case Amendments -> view = new AmendmentsView(parent, conn.host());
             case Configuration -> view = new ConfigurationView(parent, conn.host());
             case Logs -> view = createLogView();
             case Peers -> view = new PeersView(parent);
