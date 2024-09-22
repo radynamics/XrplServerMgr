@@ -22,7 +22,7 @@ public class AmendmentsForm extends JDialog {
         var l = new SpringLayout();
         setLayout(l);
 
-        view.init(features, knownAmendments);
+        view.refresh(features, knownAmendments);
         add(view);
         view.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
 

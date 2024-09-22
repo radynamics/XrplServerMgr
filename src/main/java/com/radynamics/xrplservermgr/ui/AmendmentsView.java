@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 public class AmendmentsView extends JPanel {
     private final ArrayList<VoteState> state = new ArrayList<>();
+    private final ArrayList<AmendmentRowView> rowViews = new ArrayList<>();
 
     private final JPanel pnl = new JPanel();
 
@@ -33,7 +34,7 @@ public class AmendmentsView extends JPanel {
         ml.putConstraint(SpringLayout.SOUTH, sp, 0, SpringLayout.SOUTH, this);
     }
 
-    public void init(Features features, List<Amendment> knownAmendments) {
+    public void refresh(Features features, List<Amendment> knownAmendments) {
         pnl.removeAll();
         var sorted = features.all().stream()
                 .sorted(Features.createComparator())
@@ -41,6 +42,7 @@ public class AmendmentsView extends JPanel {
         for (var f : sorted) {
             var a = knownAmendments.stream().filter(o -> o.hash().equals(f.hash())).findFirst().orElse(null);
             var v = new AmendmentRowView(a, f);
+            rowViews.add(v);
             pnl.add(v.view());
         }
     }
@@ -59,6 +61,15 @@ public class AmendmentsView extends JPanel {
 
     public List<VoteState> changes() {
         return state.stream().filter(VoteState::changed).collect(Collectors.toList());
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        for (var v : rowViews) {
+            v.setEnabled(enabled);
+        }
     }
 
     private class AmendmentRowView {
