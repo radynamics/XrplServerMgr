@@ -9,6 +9,9 @@ import java.util.List;
 public class Amendments {
     public static List<Amendment> all() {
         var list = new ArrayList<Amendment>();
+        list.add(Amendment.of("88693F108C3CD8A967F3F4253A32DEF5E35F9406ACD2A11B88B11D90865763A9", "fix240911", new Semver("2024.9.11")));
+        list.add(Amendment.of("8063140E9260799D6716756B891CEC3E7006C4E4F277AB84670663A88F94B9C4", "fixPageCap", new Semver("2024.9.7")));
+        list.add(Amendment.of("EDB4EE4C524E16BDD91D9A529332DED08DCAAA51CC6DC897ACFA1A0ED131C5B6", "fix240819", new Semver("2024.8.20")));
         list.add(Amendment.of("7CA0426E7F411D39BB014E57CD9E08F61DE1750F0D41FCD428D9FB80BB7596B0", "ZeroB2M", new Semver("2024.4.21")));
         list.add(Amendment.of("4B8466415FAB32FFA89D9DCBE166A42340115771DF611A7160F8D7439C87ECD8", "fixNSDelete", new Semver("2024.4.21")));
         list.add(Amendment.of("0D8BF22FF7570D58598D1EF19EBB6E142AD46E59A223FD3816262FBB69345BEA", "Remit", new Semver("2024.3.12")));
