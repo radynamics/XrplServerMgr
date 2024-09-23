@@ -4,6 +4,7 @@ public class ValidationStreamData {
     private String ledgerIndex;
     private String validationPublicKey;
     private long signingTime;
+    private String masterKey;
 
     public String ledgerIndex() {
         return ledgerIndex;
@@ -27,6 +28,13 @@ public class ValidationStreamData {
 
     public void signingTime(long signingTime) {
         this.signingTime = signingTime;
+    }
+
+    public String masterKey() {
+        return masterKey;
+    }
+    public void masterKey(String masterKey) {
+        this.masterKey = masterKey;
     }
 
     @Override

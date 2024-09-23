@@ -18,6 +18,7 @@ public class ValidationStream implements StreamListener {
         parsed.ledgerIndex(data.get("ledger_index").getAsString());
         parsed.validationPublicKey(data.get("validation_public_key").getAsString());
         parsed.signingTime(data.get("signing_time").getAsLong());
+        parsed.masterKey(data.get("master_key").getAsString());
 
         raiseOnReceive(parsed);
     }
