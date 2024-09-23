@@ -250,6 +250,10 @@ public class SshSession implements AutoCloseable {
         }
     }
 
+    public String host() {
+        return host;
+    }
+
     public String user() {
         return user;
     }

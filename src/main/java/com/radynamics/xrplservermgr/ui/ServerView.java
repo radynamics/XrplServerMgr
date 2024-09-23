@@ -232,6 +232,7 @@ public class ServerView extends JPanel implements TabPage, AppendListener, Actio
             case Configuration -> view = new ConfigurationView(parent, conn.host());
             case Logs -> view = createLogView();
             case Peers -> view = new PeersView(parent);
+            case Streams -> view = new StreamsView(parent);
             case CommandLine -> view = new CommandLineView(parent);
             default -> view = new Placeholder(parent, item.name());
         }

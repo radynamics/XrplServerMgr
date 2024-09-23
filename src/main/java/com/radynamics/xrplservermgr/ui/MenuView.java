@@ -18,6 +18,7 @@ public class MenuView extends JPanel {
     private final JLabel lblConfiguration;
     private final JLabel lblLogs;
     private final JLabel lblPeers;
+    private final JLabel lblStreams;
     private final JLabel lblComnandLine;
 
     public MenuView() {
@@ -34,6 +35,8 @@ public class MenuView extends JPanel {
         add(createRow(lblLogs, "file.svg", MenuItem.Logs));
         lblPeers = createNavLabel("Peers");
         add(createRow(lblPeers, "globe.svg", MenuItem.Peers));
+        lblStreams = createNavLabel("Streams");
+        add(createRow(lblStreams, "stream.svg", MenuItem.Streams));
         lblComnandLine = createNavLabel("Console");
         add(createRow(lblComnandLine, "console.svg", MenuItem.CommandLine));
     }
@@ -93,6 +96,7 @@ public class MenuView extends JPanel {
         lblConfiguration.setEnabled(enabled);
         lblLogs.setEnabled(enabled);
         lblPeers.setEnabled(enabled);
+        lblStreams.setEnabled(enabled);
         lblComnandLine.setEnabled(enabled);
     }
 

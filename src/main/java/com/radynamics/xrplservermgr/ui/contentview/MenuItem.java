@@ -6,5 +6,6 @@ public enum MenuItem {
     Configuration,
     Logs,
     Peers,
+    Streams,
     CommandLine
 }

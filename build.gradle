@@ -20,6 +20,7 @@ dependencies {
     implementation group: 'com.github.mwiede', name: 'jsch', version: '0.2.17'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.vdurmont:semver4j:3.1.0'
+    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-client', version: '9.4.56.v20240826'
 
     implementation group: 'net.coderazzi', name: 'tablefilter-swing', version: '5.5.4'
     implementation 'com.formdev:flatlaf:3.4'
