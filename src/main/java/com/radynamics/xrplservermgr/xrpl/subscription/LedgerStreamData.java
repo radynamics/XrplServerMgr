@@ -1,11 +1,18 @@
 package com.radynamics.xrplservermgr.xrpl.subscription;
 
+import java.time.ZonedDateTime;
+
 public class LedgerStreamData {
+    private final ZonedDateTime dateTime = ZonedDateTime.now();
     private String type;
     private long ledgerIndex;
     private long ledgerTime;
     private String ledgerHash;
     private int txnCount;
+
+    public ZonedDateTime dateTime() {
+        return dateTime;
+    }
 
     public String type() {
         return type;

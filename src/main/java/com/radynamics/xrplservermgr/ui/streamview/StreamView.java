@@ -85,10 +85,10 @@ public class StreamView extends JPanel {
                 l = vs;
                 break;
             case Ledger:
-                var tv = new TextPresentation(knownValidatorRepo);
-                v = tv;
+                var lst = new LedgerStreamTable();
+                v = lst;
                 var ls = new LedgerStream();
-                ls.addListener(tv);
+                ls.addListener(lst);
                 l = ls;
                 break;
             default:
