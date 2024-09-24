@@ -21,12 +21,13 @@ public class LedgerStreamTable implements Presentation, LedgerStreamListener {
         var rightRenderer = new AlignedCellRenderer(JLabel.RIGHT);
 
         table.getColumnModel().getColumn(0).setPreferredWidth(80);
-        table.getColumnModel().getColumn(1).setPreferredWidth(120);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+        table.getColumnModel().getColumn(1).setHeaderRenderer(rightRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
         table.getColumnModel().getColumn(2).setPreferredWidth(100);
-        table.getColumnModel().getColumn(3).setPreferredWidth(80);
-        table.getColumnModel().getColumn(3).setHeaderRenderer(rightRenderer);
-        table.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
-        table.getColumnModel().getColumn(4).setPreferredWidth(450);
+        table.getColumnModel().getColumn(2).setHeaderRenderer(rightRenderer);
+        table.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
+        table.getColumnModel().getColumn(3).setPreferredWidth(450);
     }
 
     @Override

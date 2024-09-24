@@ -4,7 +4,6 @@ import java.time.ZonedDateTime;
 
 public class LedgerStreamData {
     private final ZonedDateTime dateTime = ZonedDateTime.now();
-    private String type;
     private long ledgerIndex;
     private long ledgerTime;
     private String ledgerHash;
@@ -12,14 +11,6 @@ public class LedgerStreamData {
 
     public ZonedDateTime dateTime() {
         return dateTime;
-    }
-
-    public String type() {
-        return type;
-    }
-
-    public void type(String type) {
-        this.type = type;
     }
 
     public long ledgerIndex() {

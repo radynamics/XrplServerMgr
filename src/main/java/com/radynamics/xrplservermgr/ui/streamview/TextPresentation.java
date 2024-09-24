@@ -45,11 +45,10 @@ public class TextPresentation implements Presentation, ValidationStreamListener,
 
     @Override
     public void onReceive(LedgerStreamData data) {
-        var typeText = StringUtils.leftPad(data.type(), 10, ' ');
         var ledgerIndexText = StringUtils.leftPad(String.valueOf(data.ledgerIndex()), 10, ' ');
         var txCountText = StringUtils.leftPad(String.valueOf(data.txnCount()), 6, ' ');
         var ledgerHashText = StringUtils.leftPad(data.ledgerHash(), 60, ' ');
-        appendLog("%s %s %s %s".formatted(typeText, ledgerIndexText, txCountText, ledgerHashText));
+        appendLog("%s %s %s".formatted(ledgerIndexText, txCountText, ledgerHashText));
     }
 
     private void appendLog(String text) {

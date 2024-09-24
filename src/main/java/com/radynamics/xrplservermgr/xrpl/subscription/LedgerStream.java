@@ -15,7 +15,6 @@ public class LedgerStream implements StreamListener {
     @Override
     public void onReceive(JsonObject data) {
         var parsed = new LedgerStreamData();
-        parsed.type(data.get("type").getAsString());
         parsed.ledgerIndex(data.get("ledger_index").getAsLong());
         parsed.ledgerTime(data.get("ledger_time").getAsLong());
         parsed.ledgerHash(data.get("ledger_hash").getAsString());

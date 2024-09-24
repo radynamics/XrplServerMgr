@@ -19,7 +19,7 @@ public class LedgerStreamTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return 4;
     }
 
     @Override
@@ -33,8 +33,6 @@ public class LedgerStreamTableModel extends AbstractTableModel {
                 return String.class;
             case 3:
                 return String.class;
-            case 4:
-                return String.class;
         }
         return Object.class;
     }
@@ -45,12 +43,10 @@ public class LedgerStreamTableModel extends AbstractTableModel {
             case 0:
                 return "Local Time";
             case 1:
-                return "Type";
-            case 2:
                 return "Ledger Index";
-            case 3:
+            case 2:
                 return "TX count";
-            case 4:
+            case 3:
                 return "Hash";
         }
         return null;
@@ -63,12 +59,10 @@ public class LedgerStreamTableModel extends AbstractTableModel {
             case 0:
                 return item.dateTime().format(formatter);
             case 1:
-                return item.type();
-            case 2:
                 return item.ledgerIndex();
-            case 3:
+            case 2:
                 return item.txnCount();
-            case 4:
+            case 3:
                 return item.ledgerHash();
         }
         return null;
