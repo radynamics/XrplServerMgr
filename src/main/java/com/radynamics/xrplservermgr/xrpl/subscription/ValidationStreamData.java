@@ -1,10 +1,17 @@
 package com.radynamics.xrplservermgr.xrpl.subscription;
 
+import java.time.ZonedDateTime;
+
 public class ValidationStreamData {
+    private final ZonedDateTime dateTime = ZonedDateTime.now();
     private String ledgerIndex;
     private String validationPublicKey;
     private long signingTime;
     private String masterKey;
+
+    public ZonedDateTime dateTime() {
+        return dateTime;
+    }
 
     public String ledgerIndex() {
         return ledgerIndex;
@@ -33,6 +40,7 @@ public class ValidationStreamData {
     public String masterKey() {
         return masterKey;
     }
+
     public void masterKey(String masterKey) {
         this.masterKey = masterKey;
     }

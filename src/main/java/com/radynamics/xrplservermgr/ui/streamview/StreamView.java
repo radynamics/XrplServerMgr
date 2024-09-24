@@ -1,20 +1,17 @@
-package com.radynamics.xrplservermgr.ui;
+package com.radynamics.xrplservermgr.ui.streamview;
 
 import com.radynamics.xrplservermgr.xrpl.KnownValidatorRepo;
 import com.radynamics.xrplservermgr.xrpl.rippled.ValidatorRepo;
 import com.radynamics.xrplservermgr.xrpl.subscription.*;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.beans.ExceptionListener;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
-public class StreamView extends JPanel implements ValidationStreamListener, LedgerStreamListener {
-    private final JTextArea txt = new JTextArea();
+public class StreamView extends JPanel {
+    private final JScrollPane scrollPane;
     private final JButton cmdStartStop;
     private final JComboBox<Stream> cbo;
     private SubscriptionStreamSession client;
@@ -42,17 +39,10 @@ public class StreamView extends JPanel implements ValidationStreamListener, Ledg
             cmdStartStop.addActionListener(e -> onStartStopClick());
         }
 
-        txt.setEditable(false);
-        txt.setFont(new Font("monospaced", Font.PLAIN, 12));
-
-        var sp = new JScrollPane(txt);
-        add(sp);
-        sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        sp.getViewport().add(txt);
-        sp.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Always scroll to last record.
-        sp.getVerticalScrollBar().addAdjustmentListener(e -> e.getAdjustable().setValue(e.getAdjustable().getMaximum()));
+        scrollPane = new JScrollPane();
+        add(scrollPane);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
     private void onStartStopClick() {
@@ -79,24 +69,34 @@ public class StreamView extends JPanel implements ValidationStreamListener, Ledg
     }
 
     public void startListening() {
-        txt.setText("");
+        if (scrollPane.getViewport().getView() != null) {
+            scrollPane.setViewportView(null);
+        }
 
+        Presentation v;
         StreamListener l;
         var selected = (Stream) cbo.getSelectedItem();
         switch (selected) {
             case Validations:
+                var vst = new ValidationStreamTable(knownValidatorRepo);
+                v = vst;
                 var vs = new ValidationStream();
-                vs.addListener(this);
+                vs.addListener(vst);
                 l = vs;
                 break;
             case Ledger:
+                var tv = new TextPresentation(knownValidatorRepo);
+                v = tv;
                 var ls = new LedgerStream();
-                ls.addListener(this);
+                ls.addListener(tv);
                 l = ls;
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + selected);
         }
+
+        scrollPane.add(v.view());
+        scrollPane.getViewport().add(v.view());
 
         client = new SubscriptionStreamSession(endpoint, l);
         client.subscribe();
@@ -109,35 +109,6 @@ public class StreamView extends JPanel implements ValidationStreamListener, Ledg
             client.unsubscribe(streams.get(i));
             streams.remove(i);
         }
-    }
-
-    @Override
-    public void onReceive(ValidationStreamData data) {
-        var ledgerIndexText = StringUtils.leftPad(data.ledgerIndex(), 10, ' ');
-        var signingTimeText = StringUtils.leftPad(String.valueOf(data.signingTime()), 10, ' ');
-
-        var validatorValueText = data.masterKey() == null ? data.validationPublicKey() : data.masterKey();
-        var validatorText = StringUtils.leftPad(validatorValueText, 55, ' ');
-        var knownValidator = knownValidatorRepo.get(data.masterKey()).orElse(null);
-        if (knownValidator != null) {
-            validatorText += " (%s)".formatted(knownValidator.domain());
-        }
-        appendLog("%s %s %s".formatted(ledgerIndexText, signingTimeText, validatorText));
-    }
-
-    @Override
-    public void onReceive(LedgerStreamData data) {
-        var typeText = StringUtils.leftPad(data.type(), 10, ' ');
-        var ledgerIndexText = StringUtils.leftPad(String.valueOf(data.ledgerIndex()), 10, ' ');
-        var txCountText = StringUtils.leftPad(String.valueOf(data.txnCount()), 6, ' ');
-        var ledgerHashText = StringUtils.leftPad(data.ledgerHash(), 60, ' ');
-        appendLog("%s %s %s %s".formatted(typeText, ledgerIndexText, txCountText, ledgerHashText));
-    }
-
-    private void appendLog(String text) {
-        var sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-        var timeText = sdf.format(new Date());
-        txt.append("%s: %s\n".formatted(timeText, text));
     }
 
     public void endpoint(URI endpoint) {

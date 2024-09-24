@@ -1,7 +1,7 @@
 package com.radynamics.xrplservermgr.ui.contentview;
 
 import com.radynamics.xrplservermgr.sshapi.SshApiException;
-import com.radynamics.xrplservermgr.ui.StreamView;
+import com.radynamics.xrplservermgr.ui.streamview.StreamView;
 import com.radynamics.xrplservermgr.xrpl.parser.config.Server;
 
 import javax.swing.*;
