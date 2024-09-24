@@ -1,5 +1,6 @@
 package com.radynamics.xrplservermgr.ui.streamview;
 
+import com.radynamics.xrplservermgr.utils.Utils;
 import com.radynamics.xrplservermgr.xrpl.KnownValidatorRepo;
 import com.radynamics.xrplservermgr.xrpl.subscription.ValidationStreamData;
 
@@ -71,7 +72,7 @@ public class ValidationStreamTableModel extends AbstractTableModel {
             case 1:
                 return item.ledgerIndex();
             case 2:
-                return item.signingTime();
+                return Utils.fromRippleTime(item.signingTime()).format(formatter);
             case 3:
                 return item.masterKey() == null ? item.validationPublicKey() : item.masterKey();
             case 4:

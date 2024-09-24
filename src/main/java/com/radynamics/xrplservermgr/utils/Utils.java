@@ -6,6 +6,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Utils {
@@ -35,5 +38,11 @@ public class Utils {
         }
         scanner.close();
         return sb.toString();
+    }
+
+    public static ZonedDateTime fromRippleTime(long time) {
+        final long rippleEpoch = 946684800;
+        var unixTime = new Date(rippleEpoch * 1000 + time * 1000);
+        return unixTime.toInstant().atZone(ZoneId.of("UTC"));
     }
 }

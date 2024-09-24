@@ -1,5 +1,6 @@
 package com.radynamics.xrplservermgr.ui.streamview;
 
+import com.radynamics.xrplservermgr.utils.Utils;
 import com.radynamics.xrplservermgr.xrpl.KnownValidatorRepo;
 import com.radynamics.xrplservermgr.xrpl.subscription.LedgerStreamData;
 import com.radynamics.xrplservermgr.xrpl.subscription.LedgerStreamListener;
@@ -11,11 +12,13 @@ import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class TextPresentation implements Presentation, ValidationStreamListener, LedgerStreamListener {
     private final JTextArea txt = new JTextArea();
     private final KnownValidatorRepo knownValidatorRepo;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
     public TextPresentation(KnownValidatorRepo knownValidatorRepo) {
         this.knownValidatorRepo = knownValidatorRepo;
@@ -29,7 +32,7 @@ public class TextPresentation implements Presentation, ValidationStreamListener,
     @Override
     public void onReceive(ValidationStreamData data) {
         var ledgerIndexText = StringUtils.leftPad(data.ledgerIndex(), 10, ' ');
-        var signingTimeText = StringUtils.leftPad(String.valueOf(data.signingTime()), 10, ' ');
+        var signingTimeText = StringUtils.leftPad(Utils.fromRippleTime(data.signingTime()).format(formatter), 10, ' ');
 
         var validatorValueText = data.masterKey() == null ? data.validationPublicKey() : data.masterKey();
         var validatorText = StringUtils.leftPad(validatorValueText, 55, ' ');
