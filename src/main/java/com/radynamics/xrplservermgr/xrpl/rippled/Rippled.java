@@ -136,6 +136,20 @@ public class Rippled implements XrplBinary {
         return new XrplPaths(processRemotePath(), configRemotePath(), serverLogRemotePath, serverDatabasePath, validatorsTxtPath);
     }
 
+    @Override
+    public ValidatorRepo knownValidatorRepo() {
+        switch (config().networkId()) {
+            case "main":
+            case "0":
+                return ValidatorRepo.main();
+            case "testnet":
+            case "1":
+                return ValidatorRepo.test();
+            default:
+                return new ValidatorRepo();
+        }
+    }
+
     public SshSession session() {
         return session;
     }

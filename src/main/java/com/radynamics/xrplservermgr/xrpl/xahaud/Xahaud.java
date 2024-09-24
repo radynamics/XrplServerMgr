@@ -56,6 +56,20 @@ public class Xahaud implements XrplBinary {
     }
 
     @Override
+    public KnownValidatorRepo knownValidatorRepo() {
+        switch (config().networkId()) {
+            case "main":
+            case "21337":
+                return ValidatorRepo.main();
+            case "testnet":
+            case "21338":
+                return ValidatorRepo.test();
+            default:
+                return new ValidatorRepo();
+        }
+    }
+
+    @Override
     public XrplType type() {
         return XrplType.Xahau;
     }
@@ -95,7 +109,7 @@ public class Xahaud implements XrplBinary {
     }
 
     @Override
-    public ConfigCfg config() throws SshApiException {
+    public ConfigCfg config() {
         return rippled.config();
     }
 

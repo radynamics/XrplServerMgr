@@ -6,7 +6,6 @@ import com.radynamics.xrplservermgr.xrpl.parser.config.Server;
 
 import javax.swing.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public class StreamsView extends ContentView {
     private final StreamView view;
@@ -42,6 +41,7 @@ public class StreamsView extends ContentView {
         view.stopAll();
         try {
             view.endpoint(new URI("%s://%s:%s".formatted(wsServer.protocol(), session.host(), Integer.parseInt(wsServer.port()))));
+            view.knownValidatorRepo(xrplBinary.knownValidatorRepo());
             view.startListening();
         } catch (Exception e) {
             outputError(e.getMessage());

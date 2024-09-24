@@ -1,5 +1,7 @@
 package com.radynamics.xrplservermgr.ui;
 
+import com.radynamics.xrplservermgr.xrpl.KnownValidatorRepo;
+import com.radynamics.xrplservermgr.xrpl.rippled.ValidatorRepo;
 import com.radynamics.xrplservermgr.xrpl.subscription.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,6 +21,7 @@ public class StreamView extends JPanel implements ValidationStreamListener, Ledg
     private final ArrayList<ExceptionListener> listener = new ArrayList<>();
     private final ArrayList<StreamListener> streams = new ArrayList<>();
     private URI endpoint;
+    private KnownValidatorRepo knownValidatorRepo = new ValidatorRepo();
 
     public StreamView() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -112,8 +115,13 @@ public class StreamView extends JPanel implements ValidationStreamListener, Ledg
     public void onReceive(ValidationStreamData data) {
         var ledgerIndexText = StringUtils.leftPad(data.ledgerIndex(), 10, ' ');
         var signingTimeText = StringUtils.leftPad(String.valueOf(data.signingTime()), 10, ' ');
+
         var validatorValueText = data.masterKey() == null ? data.validationPublicKey() : data.masterKey();
         var validatorText = StringUtils.leftPad(validatorValueText, 55, ' ');
+        var knownValidator = knownValidatorRepo.get(data.masterKey()).orElse(null);
+        if (knownValidator != null) {
+            validatorText += " (%s)".formatted(knownValidator.domain());
+        }
         appendLog("%s %s %s".formatted(ledgerIndexText, signingTimeText, validatorText));
     }
 
@@ -134,6 +142,10 @@ public class StreamView extends JPanel implements ValidationStreamListener, Ledg
 
     public void endpoint(URI endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public void knownValidatorRepo(KnownValidatorRepo knownValidatorRepo) {
+        this.knownValidatorRepo = knownValidatorRepo;
     }
 
     @Override

@@ -71,4 +71,6 @@ public interface XrplBinary {
     void deleteDebugLog() throws SshApiException;
 
     XrplPaths remotePaths() throws SshApiException;
+
+    KnownValidatorRepo knownValidatorRepo();
 }
