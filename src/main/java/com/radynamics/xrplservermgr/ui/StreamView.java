@@ -112,8 +112,9 @@ public class StreamView extends JPanel implements ValidationStreamListener, Ledg
     public void onReceive(ValidationStreamData data) {
         var ledgerIndexText = StringUtils.leftPad(data.ledgerIndex(), 10, ' ');
         var signingTimeText = StringUtils.leftPad(String.valueOf(data.signingTime()), 10, ' ');
-        var masterKeyText = StringUtils.leftPad(data.masterKey(), 55, ' ');
-        appendLog("%s %s %s".formatted(ledgerIndexText, signingTimeText, masterKeyText));
+        var validatorValueText = data.masterKey() == null ? data.validationPublicKey() : data.masterKey();
+        var validatorText = StringUtils.leftPad(validatorValueText, 55, ' ');
+        appendLog("%s %s %s".formatted(ledgerIndexText, signingTimeText, validatorText));
     }
 
     @Override
