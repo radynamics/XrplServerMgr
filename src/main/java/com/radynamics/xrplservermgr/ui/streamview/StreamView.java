@@ -17,7 +17,8 @@ public class StreamView extends JPanel {
     private SubscriptionStreamSession client;
     private final ArrayList<ExceptionListener> listener = new ArrayList<>();
     private final ArrayList<StreamListener> streams = new ArrayList<>();
-    private URI endpoint;
+    private URI publicEndpoint;
+    private URI adminEndpoint;
     private KnownValidatorRepo knownValidatorRepo = new ValidatorRepo();
 
     public StreamView() {
@@ -76,6 +77,7 @@ public class StreamView extends JPanel {
         Presentation v;
         StreamListener l;
         var selected = (Stream) cbo.getSelectedItem();
+        var endpoint = publicEndpoint;
         switch (selected) {
             case Validations:
                 var vst = new ValidationStreamTable(knownValidatorRepo);
@@ -90,6 +92,14 @@ public class StreamView extends JPanel {
                 var ls = new LedgerStream();
                 ls.addListener(lst);
                 l = ls;
+                break;
+            case PeerStatus:
+                var psst = new PeerStatusStreamTable();
+                v = psst;
+                var pss = new PeerStatusStream();
+                pss.addListener(psst);
+                l = pss;
+                endpoint = adminEndpoint;
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + selected);
@@ -111,8 +121,12 @@ public class StreamView extends JPanel {
         }
     }
 
-    public void endpoint(URI endpoint) {
-        this.endpoint = endpoint;
+    public void publicEndpoint(URI publicEndpoint) {
+        this.publicEndpoint = publicEndpoint;
+    }
+
+    public void adminEndpoint(URI adminEndpoint) {
+        this.adminEndpoint = adminEndpoint;
     }
 
     public void knownValidatorRepo(KnownValidatorRepo knownValidatorRepo) {

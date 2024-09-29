@@ -4,9 +4,10 @@ import java.util.List;
 
 public enum Stream {
     Validations,
-    Ledger;
+    Ledger,
+    PeerStatus;
 
     public static List<Stream> all() {
-        return List.of(Stream.Validations, Stream.Ledger);
+        return List.of(Stream.Validations, Stream.Ledger, Stream.PeerStatus);
     }
 }

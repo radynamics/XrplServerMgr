@@ -69,6 +69,10 @@ public abstract class ContentView extends JPanel implements TabPage {
         appendOutput(message, ActionLogLevel.Error);
     }
 
+    protected void outputWarn(String message) {
+        appendOutput(message, ActionLogLevel.Warning);
+    }
+
     protected void appendOutput(String message, ActionLogLevel level) {
         SwingUtilities.invokeLater(() -> actionOutput.append(message, level));
     }

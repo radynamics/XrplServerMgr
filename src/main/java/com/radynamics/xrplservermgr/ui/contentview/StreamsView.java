@@ -23,10 +23,14 @@ public class StreamsView extends ContentView {
     @Override
     protected void refresh() {
         Server wsServer = null;
+        Server wsAdminServer = null;
         try {
             var servers = xrplBinary.config().server();
             wsServer = servers.all().stream()
                     .filter(o -> o.name().contains("port_ws_public"))
+                    .findFirst().orElse(null);
+            wsAdminServer = servers.all().stream()
+                    .filter(o -> o.name().contains("port_ws_admin"))
                     .findFirst().orElse(null);
         } catch (SshApiException e) {
             outputError(e.getMessage());
@@ -37,10 +41,14 @@ public class StreamsView extends ContentView {
             view.setEnabled(false);
             return;
         }
+        if (wsAdminServer == null) {
+            outputWarn("There is no server with a name 'port_ws_admin' defined in xrpl config in [server] section.");
+        }
 
         view.stopAll();
         try {
-            view.endpoint(new URI("%s://%s:%s".formatted(wsServer.protocol(), session.host(), Integer.parseInt(wsServer.port()))));
+            view.publicEndpoint(new URI("%s://%s:%s".formatted(wsServer.protocol(), session.host(), Integer.parseInt(wsServer.port()))));
+            view.adminEndpoint(new URI("%s://%s:%s".formatted(wsAdminServer.protocol(), session.host(), Integer.parseInt(wsAdminServer.port()))));
             view.knownValidatorRepo(xrplBinary.knownValidatorRepo());
             view.startListening();
         } catch (Exception e) {

@@ -2,10 +2,7 @@ package com.radynamics.xrplservermgr.ui.streamview;
 
 import com.radynamics.xrplservermgr.utils.Utils;
 import com.radynamics.xrplservermgr.xrpl.KnownValidatorRepo;
-import com.radynamics.xrplservermgr.xrpl.subscription.LedgerStreamData;
-import com.radynamics.xrplservermgr.xrpl.subscription.LedgerStreamListener;
-import com.radynamics.xrplservermgr.xrpl.subscription.ValidationStreamData;
-import com.radynamics.xrplservermgr.xrpl.subscription.ValidationStreamListener;
+import com.radynamics.xrplservermgr.xrpl.subscription.*;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -15,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-public class TextPresentation implements Presentation, ValidationStreamListener, LedgerStreamListener {
+public class TextPresentation implements Presentation, ValidationStreamListener, LedgerStreamListener, PeerStatusStreamListener {
     private final JTextArea txt = new JTextArea();
     private final KnownValidatorRepo knownValidatorRepo;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
@@ -49,6 +46,14 @@ public class TextPresentation implements Presentation, ValidationStreamListener,
         var txCountText = StringUtils.leftPad(String.valueOf(data.txnCount()), 6, ' ');
         var ledgerHashText = StringUtils.leftPad(data.ledgerHash(), 60, ' ');
         appendLog("%s %s %s".formatted(ledgerIndexText, txCountText, ledgerHashText));
+    }
+
+    @Override
+    public void onReceive(PeerStatusStreamData data) {
+        var ledgerIndexText = StringUtils.leftPad(String.valueOf(data.ledgerIndex()), 10, ' ');
+        var actionText = StringUtils.leftPad(data.action(), 6, ' ');
+        var ledgerHashText = StringUtils.leftPad(data.ledgerHash(), 60, ' ');
+        appendLog("%s %s %s".formatted(ledgerIndexText, actionText, ledgerHashText));
     }
 
     private void appendLog(String text) {
