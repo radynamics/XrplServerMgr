@@ -54,7 +54,7 @@ public class PeerStatusStreamTableModel extends AbstractTableModel {
             case 2:
                 return "Action";
             case 3:
-                return "Date";
+                return "Time";
             case 4:
                 return "Ledger Index min";
             case 5:
