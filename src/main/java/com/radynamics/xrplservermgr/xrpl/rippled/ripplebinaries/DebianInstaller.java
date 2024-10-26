@@ -76,6 +76,6 @@ public class DebianInstaller implements RippledPlatformInstaller {
 
     private boolean osSupported(String systemCodename) {
         // https://xrpl.org/install-rippled-on-ubuntu.html
-        return Arrays.asList("bionic", "buster", "bullseye", "jammy").contains(systemCodename);
+        return Arrays.asList("bionic", "buster", "bullseye", "jammy", "noble").contains(systemCodename);
     }
 }
