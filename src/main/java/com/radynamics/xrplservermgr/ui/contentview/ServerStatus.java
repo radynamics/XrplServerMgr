@@ -210,10 +210,19 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
             pnlServerFeatures.remove(i);
         }
 
+        final var TOP_OFFSET = 20;
+        final var HEIGHT = 20;
+        if (data.isEmpty()) {
+            var north = TOP_OFFSET;
+            var lbl = new JLabel("not available");
+            pnlServerFeatures.add(lbl);
+            serverFeaturesSpringLayout.putConstraint(SpringLayout.WEST, lbl, 0, SpringLayout.WEST, pnlServerFeatures);
+            serverFeaturesSpringLayout.putConstraint(SpringLayout.NORTH, lbl, north, SpringLayout.NORTH, pnlServerFeatures);
+            return;
+        }
+
         var counter = 0;
         for (var e : data.entrySet()) {
-            final var TOP_OFFSET = 20;
-            final var HEIGHT = 20;
             var north = counter * HEIGHT + TOP_OFFSET;
             var lbl = new JLabel("%s:".formatted(e.getKey()));
             pnlServerFeatures.add(lbl);
@@ -543,6 +552,15 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
 
     private void refreshView() {
         try {
+            if (!xrplBinary.installed()) {
+                lblXrplState.setText("not installed");
+                var icon = new FlatSVGIcon("img/xrpledger.svg", 120, 91);
+                icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> Color.lightGray));
+                lblIcon.setIcon(icon);
+                createServerFeatures(new LinkedHashMap<>());
+                return;
+            }
+
             if (xrplBinary.type() == XrplType.Xahau) {
                 lblIcon.setIcon(new FlatSVGIcon("img/xahau.svg", 120, 120));
             } else {
@@ -551,11 +569,6 @@ public class ServerStatus extends ContentView implements ActionLogListener, Xrpl
 
             final var df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             lblRunningSince.setText(df.format(systemMonitor.serverStartingTime()));
-
-            if (!xrplBinary.installed()) {
-                lblXrplState.setText("");
-                return;
-            }
 
             var xrplRamUsed = systemMonitor.memoryUsed(xrplBinary.processName());
             var running = xrplRamUsed != null;
