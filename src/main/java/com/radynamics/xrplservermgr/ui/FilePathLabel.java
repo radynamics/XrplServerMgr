@@ -2,6 +2,7 @@ package com.radynamics.xrplservermgr.ui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.extras.components.FlatButton;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,11 +29,13 @@ public class FilePathLabel extends JPanel {
         cmd.setIcon(icon);
         cmd.setPreferredSize(new Dimension(21, 21));
         cmd.setBorderPainted(false);
+        cmd.setVisible(false);
         cmd.addActionListener(e -> raiseButtonClicked());
     }
 
     public void setText(String text) {
         lbl.setText(text);
+        cmd.setVisible(!StringUtils.isEmpty(text));
     }
 
     public String getText() {
