@@ -73,4 +73,6 @@ public interface XrplBinary {
     XrplPaths remotePaths() throws SshApiException;
 
     KnownValidatorRepo knownValidatorRepo();
+
+    Uris uris();
 }

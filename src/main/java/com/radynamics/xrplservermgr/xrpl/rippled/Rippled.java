@@ -9,6 +9,7 @@ import com.radynamics.xrplservermgr.xrpl.xahaud.XahaudInstaller;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,6 +149,13 @@ public class Rippled implements XrplBinary {
             default:
                 return new ValidatorRepo();
         }
+    }
+
+    @Override
+    public Uris uris() {
+        var uris = new Uris();
+        uris.amendmentsOverview(URI.create("https://xrpscan.com/amendments"));
+        return uris;
     }
 
     public SshSession session() {

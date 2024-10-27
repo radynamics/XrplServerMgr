@@ -8,6 +8,7 @@ import com.radynamics.xrplservermgr.xrpl.rippled.RippledCommandException;
 import com.radynamics.xrplservermgr.xrpl.rippled.Vote;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,14 @@ public class Xahaud implements XrplBinary {
             default:
                 return new ValidatorRepo();
         }
+    }
+
+
+    @Override
+    public Uris uris() {
+        var uris = new Uris();
+        uris.amendmentsOverview(URI.create("https://xahscan.com/amendments"));
+        return uris;
     }
 
     @Override

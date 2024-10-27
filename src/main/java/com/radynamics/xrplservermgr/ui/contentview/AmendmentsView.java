@@ -3,6 +3,7 @@ package com.radynamics.xrplservermgr.ui.contentview;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.radynamics.xrplservermgr.config.Configuration;
 import com.radynamics.xrplservermgr.sshapi.SshApiException;
+import com.radynamics.xrplservermgr.ui.Utils;
 import com.radynamics.xrplservermgr.ui.VoteState;
 import com.radynamics.xrplservermgr.xrpl.rippled.RippledCommandException;
 
@@ -37,6 +38,14 @@ public class AmendmentsView extends ContentView {
             toolbar.add(cmdRefresh);
             cmdRefresh.setIcon(new FlatSVGIcon("img/refresh.svg"));
             cmdRefresh.addActionListener(e -> refresh());
+        }
+        toolbar.addSeparator(new Dimension(10, 0));
+        {
+            var lbl = Utils.createLinkLabel(this, "Show consensus of amendments...", true, () -> {
+                Utils.openBrowser(this, xrplBinary.uris().amendmentsOverview());
+                return null;
+            });
+            toolbar.add(lbl);
         }
 
         view = new com.radynamics.xrplservermgr.ui.AmendmentsView();
