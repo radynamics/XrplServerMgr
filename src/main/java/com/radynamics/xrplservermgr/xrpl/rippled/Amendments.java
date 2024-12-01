@@ -9,6 +9,15 @@ import java.util.List;
 public class Amendments {
     public static List<Amendment> all() {
         var list = new ArrayList<Amendment>();
+        list.add(Amendment.of("1E7ED950F2F13C4F8E2A54103B74D57D5D298FFDBD005936164EE9E6484C438C", "fixAMMv1_2", new Semver("2.3.0")));
+        list.add(Amendment.of("726F944886BCDF7433203787E93DD9AA87FAB74DFE3AF4785BA03BEFC97ADA1F", "AMMClawback", new Semver("2.3.0")));
+        list.add(Amendment.of("950AE2EA4654E47F04AA8739C0B214E242097E802FD372D24047A89AB1F5EC38", "MPTokensV1", new Semver("2.3.0")));
+        list.add(Amendment.of("1CB67D082CF7D9102412D34258CEDB400E659352D3B207348889297A6D90F5EF", "Credentials", new Semver("2.3.0")));
+        list.add(Amendment.of("C7981B764EC4439123A86CC7CCBA436E9B3FF73B3F10A0AE51882E404522FC41", "fixNFTokenPageLinks", new Semver("2.3.0")));
+        list.add(Amendment.of("9196110C23EA879B4229E51C286180C7D02166DA712559F634372F5264D0EC59", "fixInnerObjTemplate2", new Semver("2.3.0")));
+        list.add(Amendment.of("763C37B352BE8C7A04E810F8E462644C45AFEAD624BF3894A08E5C917CF9FF39", "fixEnforceNFTokenTrustline", new Semver("2.3.0")));
+        list.add(Amendment.of("EE3CF852F0506782D05E65D49E5DCC3D16D50898CD1B646BAE274863401CC3CE", "NFTokenMintOffer", new Semver("2.3.0")));
+        list.add(Amendment.of("31E0DA76FB8FB527CADCDF0E61CB9C94120966328EFA9DCA202135BAF319C0BA", "fixReducedOffersV2", new Semver("2.3.0")));
         list.add(Amendment.of("96FD2F293A519AE1DB6F8BED23E4AD9119342DA7CB6BAFD00953D16C54205D8B", "PriceOracle", new Semver("2.2.0")));
         list.add(Amendment.of("755C971C29971C9F20C6F080F2ED96F87884E40AD19554A5EBECDCEC8A1F77FE", "fixEmptyDID", new Semver("2.2.0")));
         list.add(Amendment.of("2BF037D90E1B676B17592A8AF55E88DB465398B4B597AE46EECEE1399AB05699", "fixXChainRewardRounding", new Semver("2.2.0")));
