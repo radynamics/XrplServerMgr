@@ -1,13 +1,13 @@
 package com.radynamics.xrplservermgr.ui.streamview;
 
 import com.radynamics.xrplservermgr.xrpl.KnownValidatorRepo;
+import com.radynamics.xrplservermgr.xrpl.parser.config.Server;
 import com.radynamics.xrplservermgr.xrpl.rippled.ValidatorRepo;
 import com.radynamics.xrplservermgr.xrpl.subscription.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.beans.ExceptionListener;
-import java.net.URI;
 import java.util.ArrayList;
 
 public class StreamView extends JPanel {
@@ -17,8 +17,9 @@ public class StreamView extends JPanel {
     private SubscriptionStreamSession client;
     private final ArrayList<ExceptionListener> listener = new ArrayList<>();
     private final ArrayList<StreamListener> streams = new ArrayList<>();
-    private URI publicEndpoint;
-    private URI adminEndpoint;
+    private String host;
+    private Server publicEndpoint;
+    private Server adminEndpoint;
     private KnownValidatorRepo knownValidatorRepo = new ValidatorRepo();
 
     public StreamView() {
@@ -108,8 +109,12 @@ public class StreamView extends JPanel {
         scrollPane.add(v.view());
         scrollPane.getViewport().add(v.view());
 
-        client = new SubscriptionStreamSession(endpoint, l);
-        client.subscribe();
+        try {
+            client = new SubscriptionStreamSession(endpoint.toURI(host), l);
+            client.subscribe();
+        } catch (Exception e) {
+            throw new RuntimeException("%s. Ensure ip/port for [server].[%s] in xrpl config is correct.".formatted(e.getMessage(), endpoint.name()), e);
+        }
         streams.add(l);
         refreshInputControlStates();
     }
@@ -121,11 +126,15 @@ public class StreamView extends JPanel {
         }
     }
 
-    public void publicEndpoint(URI publicEndpoint) {
+    public void host(String host) {
+        this.host = host;
+    }
+
+    public void publicEndpoint(Server publicEndpoint) {
         this.publicEndpoint = publicEndpoint;
     }
 
-    public void adminEndpoint(URI adminEndpoint) {
+    public void adminEndpoint(Server adminEndpoint) {
         this.adminEndpoint = adminEndpoint;
     }
 

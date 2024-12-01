@@ -1,5 +1,8 @@
 package com.radynamics.xrplservermgr.xrpl.parser.config;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class Server {
     private final String name;
     private String port;
@@ -45,6 +48,10 @@ public class Server {
 
     public void protocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    public URI toURI(String host) throws URISyntaxException {
+        return new URI("%s://%s:%s".formatted(protocol, host, Integer.parseInt(port)));
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.radynamics.xrplservermgr.ui.streamview.StreamView;
 import com.radynamics.xrplservermgr.xrpl.parser.config.Server;
 
 import javax.swing.*;
-import java.net.URI;
 
 public class StreamsView extends ContentView {
     private final StreamView view;
@@ -47,8 +46,9 @@ public class StreamsView extends ContentView {
 
         view.stopAll();
         try {
-            view.publicEndpoint(new URI("%s://%s:%s".formatted(wsServer.protocol(), session.host(), Integer.parseInt(wsServer.port()))));
-            view.adminEndpoint(new URI("%s://%s:%s".formatted(wsAdminServer.protocol(), session.host(), Integer.parseInt(wsAdminServer.port()))));
+            view.host(session.host());
+            view.publicEndpoint(wsServer);
+            view.adminEndpoint(wsAdminServer);
             view.knownValidatorRepo(xrplBinary.knownValidatorRepo());
             view.startListening();
         } catch (Exception e) {
